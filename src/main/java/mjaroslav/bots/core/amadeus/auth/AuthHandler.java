@@ -5,19 +5,19 @@ import java.io.File;
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 
 public abstract class AuthHandler {
-	private final AmadeusCore core;
+    private final AmadeusCore core;
 
-	public AuthHandler(AmadeusCore core) {
-		this.core = core;
-	}
+    public AuthHandler(AmadeusCore core) {
+        this.core = core;
+    }
 
-	public abstract boolean saveToken(String token);
+    public abstract boolean saveToken(String token);
 
-	public abstract String loadToken();
+    public abstract String loadToken();
 
-	public abstract File getFolder();
+    public abstract File getFolder();
 
-	public final File getFile() {
-		return getFolder().toPath().resolve(core.getName() + ".json").toFile();
-	}
+    public final File getFile() {
+        return getFolder().toPath().resolve(core.name + ".json").toFile();
+    }
 }

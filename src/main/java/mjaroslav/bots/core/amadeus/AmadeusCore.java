@@ -1,5 +1,8 @@
 package mjaroslav.bots.core.amadeus;
 
+import java.io.File;
+import java.nio.file.Path;
+
 import mjaroslav.bots.core.amadeus.auth.AuthHandler;
 import mjaroslav.bots.core.amadeus.auth.DefaultAuthHandler;
 import sx.blah.discord.api.ClientBuilder;
@@ -9,17 +12,15 @@ import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 public abstract class AmadeusCore {
-    private final String name;
+    public final String name;
     public IDiscordClient client;
     public AuthHandler authHandler;
     private boolean isReady = false;
+    public final Path folder;
 
-    public AmadeusCore(String name) {
+    public AmadeusCore(String name, String folder) {
         this.name = name;
-    }
-
-    public String getName() {
-        return name;
+        this.folder = new File(folder).toPath();
     }
 
     public boolean auth() {
