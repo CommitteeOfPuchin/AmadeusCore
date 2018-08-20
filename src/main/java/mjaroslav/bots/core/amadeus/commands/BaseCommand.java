@@ -1,5 +1,8 @@
 package mjaroslav.bots.core.amadeus.commands;
 
+import java.util.Collections;
+import java.util.List;
+
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IMessage;
@@ -8,13 +11,13 @@ import sx.blah.discord.handle.obj.IUser;
 public abstract class BaseCommand {
     public final AmadeusCore core;
     public final CommandHandler handler;
+    public final String name;
 
-    public BaseCommand(AmadeusCore core, CommandHandler handler) {
+    public BaseCommand(AmadeusCore core, CommandHandler handler, String name) {
         this.core = core;
         this.handler = handler;
+        this.name = name;
     }
-
-    public abstract String getName();
 
     public abstract void execute(IUser sender, IMessage source, String args) throws Exception;
 
@@ -39,6 +42,17 @@ public abstract class BaseCommand {
     }
 
     public String getHelpDesc() {
-        return "<Not found>";
+        return core.translate("help." + name);
+    }
+
+    public String getHelpDesc(String args) {
+        String value = core.translate("help.noarg");
+        if (getArgsList().contains(args))
+            value = core.translate("help." + name + "." + args);
+        return value;
+    }
+
+    public List<String> getArgsList() {
+        return Collections.emptyList();
     }
 }

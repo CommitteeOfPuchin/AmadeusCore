@@ -52,7 +52,7 @@ public class DefaultCommandHandler extends CommandHandler {
     @Override
     public BaseCommand getCommand(String text) {
         for (BaseCommand command : getCommandList())
-            for (String name : getNameHandler().getNames(command.getName()))
+            for (String name : getNameHandler().getNames(command.name))
                 if (text.toLowerCase().startsWith(name))
                     return command;
         return null;
@@ -61,12 +61,11 @@ public class DefaultCommandHandler extends CommandHandler {
     @Override
     public void registerCommand(BaseCommand command) {
         for (BaseCommand checkCommand : commands)
-            for (String checkCommandName : getNameHandler().getNames(checkCommand.getName()))
-                for (String commandName : getNameHandler().getNames(command.getName()))
+            for (String checkCommandName : getNameHandler().getNames(checkCommand.name))
+                for (String commandName : getNameHandler().getNames(command.name))
                     if (checkCommandName.equals(commandName))
                         return;
         commands.add(command);
-        System.out.println("Command added");
     }
 
     @Override

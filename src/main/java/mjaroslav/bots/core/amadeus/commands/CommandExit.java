@@ -6,27 +6,17 @@ import sx.blah.discord.handle.obj.IUser;
 
 public class CommandExit extends BaseCommandDialogYesNo {
     public CommandExit(AmadeusCore core, CommandHandler handler) {
-        super(core, handler);
+        super(core, handler, "exit");
     }
 
     @Override
     public void executeYes(IUser sender, IMessage source, String args) throws Exception {
-        answerWarn(source, "Logging out!");
+        answerWarn(source, core.translate("bot.exit"));
         core.disableBot();
     }
 
     @Override
     public void executeNo(IUser sender, IMessage source, String args) throws Exception {
-        answerDone(source, "Exit canceled");
-    }
-
-    @Override
-    public String getName() {
-        return "exit";
-    }
-
-    @Override
-    public String getHelpDesc() {
-        return "Stop bot programm";
+        answerDone(source, core.translate("bot.exit.canceled"));
     }
 }

@@ -126,6 +126,6 @@ public class AmadeusUtils {
     }
 
     public static String removePreifx(String text, AmadeusCore core, BaseCommand command) {
-        return removePreifx(text, core, command.handler.getNameHandler().getNames(command.getName()));
+        return removePreifx(text, core, command.handler.getNameHandler().getNames(command.name));
     }
 }

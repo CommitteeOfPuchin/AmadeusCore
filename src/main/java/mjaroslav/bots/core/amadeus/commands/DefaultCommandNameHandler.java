@@ -16,7 +16,15 @@ public class DefaultCommandNameHandler extends CommandNameHandler {
 
     @Override
     public List<String> getPrefixes() {
-        return reader.json.getOrDefault("prefix", Arrays.asList("<bot>"));
+        ArrayList<String> result = new ArrayList<String>();
+        if (reader.json.containsKey("prefix"))
+            result.addAll(reader.json.get("prefix"));
+        else {
+            result.add("execute");
+            reader.json.put("prefix", result);
+            reader.write();
+        }
+        return result;
     }
 
     private static final Comparator<String> sort = new Comparator<String>() {
@@ -28,8 +36,14 @@ public class DefaultCommandNameHandler extends CommandNameHandler {
 
     @Override
     public List<String> getNames(String key) {
-        ArrayList<String> result = new ArrayList<String>(reader.json.getOrDefault(key, Arrays.asList(key)));
+        ArrayList<String> result = new ArrayList<String>();
         result.add(key);
+        if (reader.json.containsKey(key))
+            result.addAll(reader.json.get(key));
+        else {
+            reader.json.put(key, Collections.emptyList());
+            reader.write();
+        }
         result.sort(sort);
         return result;
     }

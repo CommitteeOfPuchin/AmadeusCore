@@ -10,6 +10,10 @@ import org.apache.commons.lang3.StringUtils;
 import mjaroslav.bots.core.amadeus.auth.AuthHandler;
 import mjaroslav.bots.core.amadeus.auth.DefaultAuthHandler;
 import mjaroslav.bots.core.amadeus.commands.*;
+import mjaroslav.bots.core.amadeus.config.BaseConfigurationHandler.DefaultConfigurationHandler;
+import mjaroslav.bots.core.amadeus.config.ConfigurationHandler;
+import mjaroslav.bots.core.amadeus.lang.DefaultLangHandler;
+import mjaroslav.bots.core.amadeus.lang.LangHandler;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
@@ -23,6 +27,8 @@ public abstract class AmadeusCore {
     private IDiscordClient client;
     private AuthHandler authHandler;
     public final ArrayList<CommandHandler> commandHandlers = new ArrayList<CommandHandler>();
+    public final ArrayList<ConfigurationHandler> configurationHandlers = new ArrayList<ConfigurationHandler>();
+    private LangHandler langHandler;
     private boolean isReady = false;
     public final File folder;
 
@@ -31,7 +37,7 @@ public abstract class AmadeusCore {
         this.folder = new File(folder);
     }
 
-    public boolean auth() {
+    public boolean initBot() {
         try {
             client = new ClientBuilder().withToken(getAuthHandler().loadToken()).login();
             client.getDispatcher().registerListener(new EventHandler(this));
@@ -40,8 +46,14 @@ public abstract class AmadeusCore {
                 Thread.sleep(3000);
                 counter++;
             }
-            registerCommandHandlers();
-            registerCommands();
+            if (isReady) {
+                getLangHandler().loadLangs();
+                registerConfigurationHandlers();
+                for (ConfigurationHandler configurationHandler : configurationHandlers)
+                    configurationHandler.readConfig();
+                registerCommandHandlers();
+                registerCommands();
+            }
             return isReady;
         } catch (Exception e) {
             e.printStackTrace();
@@ -51,6 +63,38 @@ public abstract class AmadeusCore {
 
     public void registerCommandHandlers() {
         commandHandlers.add(new DefaultCommandHandler(this));
+    }
+
+    public void registerConfigurationHandlers() {
+        configurationHandlers.add(new DefaultConfigurationHandler(this, "default", true));
+    }
+
+    public void setValue(String handlerName, String fieldName, Object value) throws Exception {
+        ConfigurationHandler handler = getConfigurationHandler(handlerName);
+        if (handler != null)
+            handler.setValue(fieldName, value);
+    }
+
+    public void setValue(String fieldName, Object value) throws Exception {
+        setValue("default", fieldName, value);
+    }
+
+    public <T> T getValue(String handlerName, String fieldName, Class<? extends T> value) throws Exception {
+        ConfigurationHandler handler = getConfigurationHandler(handlerName);
+        if (handler != null)
+            return handler.getValue(fieldName, value);
+        return null;
+    }
+
+    public <T> T getValue(String fieldName, Class<? extends T> value) throws Exception {
+        return getValue("default", fieldName, value);
+    }
+
+    public ConfigurationHandler getConfigurationHandler(String name) {
+        for (ConfigurationHandler configurationHandler : configurationHandlers)
+            if (configurationHandler.name.equals(name))
+                return configurationHandler;
+        return null;
     }
 
     public CommandHandler getCommandHanler(String name) {
@@ -74,6 +118,7 @@ public abstract class AmadeusCore {
     public void registerCommands() throws Exception {
         registerCommand(CommandHelp.class);
         registerCommand(CommandExit.class);
+        registerCommand(CommandReload.class);
     }
 
     public void sendMessage(long channelId, String text) {
@@ -96,19 +141,19 @@ public abstract class AmadeusCore {
     }
 
     public void sendError(long channelId, String text) {
-        String title = ":no_entry_sign: Error";
+        String title = String.format(":no_entry_sign: %s", translate("answer.error"));
         EmbedObject embed = new EmbedBuilder().withTitle(title).withDesc(text).withColor(0xFF0000).build();
         client.getChannelByID(channelId).sendMessage(embed);
     }
 
     public void sendDone(long channelId, String text) {
-        String title = ":white_check_mark: Done";
+        String title = String.format(":white_check_mark: %s", translate("answer.done"));
         EmbedObject embed = new EmbedBuilder().withTitle(title).withDesc(text).withColor(0x00FF00).build();
         client.getChannelByID(channelId).sendMessage(embed);
     }
 
     public void sendWarn(long channelId, String text) {
-        String title = ":warning: Warning";
+        String title = String.format(":warning: %s", translate("answer.warn"));
         EmbedObject embed = new EmbedBuilder().withTitle(title).withDesc(text).withColor(0xFFFF00).build();
         client.getChannelByID(channelId).sendMessage(embed);
     }
@@ -125,6 +170,20 @@ public abstract class AmadeusCore {
     public void disableBot() {
         if (client != null)
             client.logout();
+    }
+
+    public String translate(String key, Object... objects) {
+        return getLangHandler().translate(key, objects);
+    }
+
+    public LangHandler getLangHandler() {
+        if (langHandler == null)
+            langHandler = new DefaultLangHandler(this);
+        return langHandler;
+    }
+
+    public void setLangHandler(LangHandler langHandler) {
+        this.langHandler = langHandler;
     }
 
     public AuthHandler getAuthHandler() {
@@ -145,6 +204,10 @@ public abstract class AmadeusCore {
         return commandHandlers;
     }
 
+    public ArrayList<ConfigurationHandler> getConfigurationHandlers() {
+        return configurationHandlers;
+    }
+    
     public static class EventHandler {
         private final AmadeusCore core;
 

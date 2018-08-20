@@ -9,8 +9,8 @@ import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
 public abstract class BaseCommandDialogYesNo extends BaseCommand {
-    public BaseCommandDialogYesNo(AmadeusCore core, CommandHandler handler) {
-        super(core, handler);
+    public BaseCommandDialogYesNo(AmadeusCore core, CommandHandler handler, String name) {
+        super(core, handler, name);
     }
 
     private final HashMap<Long, String> cache = new HashMap<Long, String>();
@@ -18,23 +18,23 @@ public abstract class BaseCommandDialogYesNo extends BaseCommand {
     @Override
     public final void execute(IUser sender, IMessage source, String args) throws Exception {
         List<String> argsParsed = AmadeusUtils.parseArgsToArray(args);
-        if (argsParsed.isEmpty()) {
+        if (!cache.containsKey(source.getAuthor().getLongID())) {
             cache.put(source.getAuthor().getLongID(), args);
-            answerWarn(source, "Are you sure? Call this command with \"true/false\" arg");
+            answerWarn(source, core.translate("answer.dialogyesno"));
         } else if (argsParsed.get(0).toLowerCase().equals("true")) {
             if (cache.containsKey(source.getAuthor().getLongID())) {
                 String temp = cache.get(source.getAuthor().getLongID());
                 cache.remove(source.getAuthor().getLongID());
                 executeYes(sender, source, temp);
             } else
-                answerError(source, "You don't call this command");
+                answerError(source, core.translate("answer.dialowyesno.noneed"));
         } else {
             if (cache.containsKey(source.getAuthor().getLongID())) {
                 String temp = cache.get(source.getAuthor().getLongID());
                 cache.remove(source.getAuthor().getLongID());
                 executeNo(sender, source, temp);
             } else
-                answerError(source, "You don't call this command");
+                answerError(source, core.translate("answer.dialowyesno.noneed"));
         }
     }
 
