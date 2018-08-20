@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import mjaroslav.bots.core.amadeus.AmadeusCore;
+import mjaroslav.bots.core.amadeus.commands.BaseCommand;
 
 public class AmadeusUtils {
     public static boolean stringIsNotEmpty(String input) {
@@ -114,11 +115,17 @@ public class AmadeusUtils {
     }
 
     public static String removePreifx(String text, AmadeusCore core, Iterable<String> prefixes) {
+        if (text.startsWith("<@" + core.getClient().getOurUser().getLongID() + ">")
+                || text.startsWith("<@!" + core.getClient().getOurUser().getLongID() + ">"))
+            return text.substring(text.indexOf(">") + 1).trim();
         for (String prefix : prefixes) {
-            String replaced = prefix.replaceFirst("<bot>", "<@" + core.client.getOurUser().getLongID() + ">");
-            if (text.toLowerCase().startsWith(replaced))
-                return text.substring(replaced.length()).trim();
+            if (text.toLowerCase().startsWith(prefix))
+                return text.substring(prefix.length()).trim();
         }
         return text;
+    }
+
+    public static String removePreifx(String text, AmadeusCore core, BaseCommand command) {
+        return removePreifx(text, core, command.handler.getNameHandler().getNames(command.getName()));
     }
 }

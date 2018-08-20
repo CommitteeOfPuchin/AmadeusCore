@@ -11,5 +11,9 @@ public abstract class CommandNameHandler {
         this.core = core;
     }
 
+    public abstract List<String> getPrefixes();
+    
     public abstract List<String> getNames(String key);
+    
+    public abstract void loadNames();
 }
