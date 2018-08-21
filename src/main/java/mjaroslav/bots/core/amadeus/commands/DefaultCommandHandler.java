@@ -30,11 +30,11 @@ public class DefaultCommandHandler extends CommandHandler {
     @Override
     public boolean executeCommand(MessageReceivedEvent event) {
         String text = event.getMessage().getContent();
-        String commandString = AmadeusUtils.removePreifx(text, core, getPrefixes());
+        String commandString = AmadeusUtils.removePreifx(text, core, getPrefixes(), false);
         if (text.length() > commandString.length()) {
             BaseCommand command = getCommand(commandString);
             if (command != null) {
-                String args = AmadeusUtils.removePreifx(commandString, core, command);
+                String args = AmadeusUtils.removePreifx(commandString, core, command, false);
                 try {
                     command.execute(event.getAuthor(), event.getMessage(), args);
                 } catch (Exception e) {
@@ -52,9 +52,12 @@ public class DefaultCommandHandler extends CommandHandler {
     @Override
     public BaseCommand getCommand(String text) {
         for (BaseCommand command : getCommandList())
-            for (String name : getNameHandler().getNames(command.name))
-                if (text.toLowerCase().startsWith(name))
+            for (String name : getNameHandler().getNames(command.name)) {
+                if (text.toLowerCase().startsWith(name) && (text.toLowerCase().replaceFirst(name, "").startsWith(" ")
+                        || text.toLowerCase().replaceFirst(name, "").equals(""))) {
                     return command;
+                }
+            }
         return null;
     }
 

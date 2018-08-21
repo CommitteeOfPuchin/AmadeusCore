@@ -57,7 +57,7 @@ public class CommandHelp extends BaseCommand {
                 answer(source, "", builder.build());
             }
         } else
-            execute(sender, source, "command help" + name);
+            execute(sender, source, "command " + name + " handler " + handler.name);
     }
 
     @Override

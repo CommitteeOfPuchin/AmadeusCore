@@ -90,6 +90,13 @@ public abstract class AmadeusCore {
         return getValue("default", fieldName, value);
     }
 
+    public int getCommandCount() {
+        int result = 0;
+        for (CommandHandler handler : commandHandlers)
+            result += handler.getCommandList().size();
+        return result;
+    }
+
     public ConfigurationHandler getConfigurationHandler(String name) {
         for (ConfigurationHandler configurationHandler : configurationHandlers)
             if (configurationHandler.name.equals(name))
@@ -119,6 +126,7 @@ public abstract class AmadeusCore {
         registerCommand(CommandHelp.class);
         registerCommand(CommandExit.class);
         registerCommand(CommandReload.class);
+        registerCommand(CommandStatus.class);
     }
 
     public void sendMessage(long channelId, String text) {
@@ -207,7 +215,7 @@ public abstract class AmadeusCore {
     public ArrayList<ConfigurationHandler> getConfigurationHandlers() {
         return configurationHandlers;
     }
-    
+
     public static class EventHandler {
         private final AmadeusCore core;
 

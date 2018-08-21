@@ -114,18 +114,19 @@ public class AmadeusUtils {
         return result;
     }
 
-    public static String removePreifx(String text, AmadeusCore core, Iterable<String> prefixes) {
+    public static String removePreifx(String text, AmadeusCore core, Iterable<String> prefixes, boolean checkSpace) {
         if (text.startsWith("<@" + core.getClient().getOurUser().getLongID() + ">")
                 || text.startsWith("<@!" + core.getClient().getOurUser().getLongID() + ">"))
             return text.substring(text.indexOf(">") + 1).trim();
         for (String prefix : prefixes) {
             if (text.toLowerCase().startsWith(prefix))
-                return text.substring(prefix.length()).trim();
+                if (!checkSpace || text.substring(prefix.length()).startsWith(" "))
+                    return text.substring(prefix.length()).trim();
         }
         return text;
     }
 
-    public static String removePreifx(String text, AmadeusCore core, BaseCommand command) {
-        return removePreifx(text, core, command.handler.getNameHandler().getNames(command.name));
+    public static String removePreifx(String text, AmadeusCore core, BaseCommand command, boolean checkSpace) {
+        return removePreifx(text, core, command.handler.getNameHandler().getNames(command.name), checkSpace);
     }
 }
