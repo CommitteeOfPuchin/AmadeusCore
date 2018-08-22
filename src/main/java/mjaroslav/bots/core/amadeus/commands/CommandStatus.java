@@ -26,10 +26,10 @@ public class CommandStatus extends BaseCommand {
         double max = Runtime.getRuntime().maxMemory();
         double curr = max - Runtime.getRuntime().freeMemory();
         String per = String.format("%.2f", curr * 100F / max) + "%";
-        max /= 8 * 1024 * 1024;
-        curr /= 8 * 1024 * 1024;
+        max /= 8388608;
+        curr /= 8388608;
         answer.append(core.translate("status.memory", curr, max, per) + "\n");
         answer(source, "", new EmbedBuilder().withThumbnail(core.getClient().getOurUser().getAvatarURL())
-                .withColor(0x00FF00).appendDesc(answer.toString()).withAuthorName(core.name).build());
+                .withColor(0x00FF00).appendDesc(answer.toString()).withAuthorName("AmadeusCore > " + core.name).build());
     }
 }

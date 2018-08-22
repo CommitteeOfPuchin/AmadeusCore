@@ -1,6 +1,7 @@
 package mjaroslav.bots.core.amadeus.commands;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import mjaroslav.bots.core.amadeus.AmadeusCore;
@@ -17,35 +18,39 @@ public class CommandHelp extends BaseCommand {
     @Override
     public void execute(IUser sender, IMessage source, String args) throws Exception {
         if (args.length() > 0) {
-            List<String> argsParsed = AmadeusUtils.parseArgsToArray(args);
+            HashMap<String, String> argsParsed = AmadeusUtils.parseArgsToMap(args);
             CommandHandler handler = null;
-            if (argsParsed.contains("handler"))
-                handler = core.getCommandHanler(argsParsed.get(argsParsed.indexOf("handler")) + 1);
+            if (hasArg("handler", argsParsed))
+                handler = core.getCommandHanler(argValue("handler", argsParsed));
             if (handler == null)
                 handler = this.handler;
             BaseCommand command = null;
-            if (argsParsed.contains("command"))
-                command = handler.getCommand(argsParsed.get(argsParsed.indexOf("command") + 1));
+            if (hasArg("command", argsParsed))
+                command = handler.getCommand(argValue("command", argsParsed));
             EmbedBuilder builder = new EmbedBuilder().withColor(0x00FF00);
             StringBuilder desc = new StringBuilder();
             if (command != null) {
                 builder.withAuthorName(core.translate("help.commandname", command.name));
                 String argName = "";
-                if (argsParsed.contains("arg"))
-                    argName = argsParsed.get(argsParsed.indexOf("arg") + 1);
-                if (AmadeusUtils.stringIsEmpty(argName))
+                if (hasArg("arg", argsParsed))
+                    argName = argValue("arg", argsParsed);
+                if (AmadeusUtils.stringIsEmpty(argName)) {
                     desc.append(command.getHelpDesc());
-                else {
+                    desc.append("\n\n" + core.translate("help.commands.names") + "\n");
+                    for (String name : handler.getNameHandler().getNames(command.name))
+                        desc.append("\"" + name + "\" ");
+                    if (!command.getArgsList().isEmpty())
+                        desc.append("\n\n" + core.translate("help.args") + "\n");
+                    for (String arg : command.getArgsList())
+                        desc.append("\"" + arg + "\" ");
+                } else {
                     desc.append(command.getHelpDesc(argName));
+                    desc.append("\n\n" + core.translate("help.commands.names") + "\n");
+                    for (String name : handler.getNameHandler().getArgNames(command.name, argName))
+                        desc.append("\"" + name + "\" ");
                     builder.withAuthorName(core.translate("help.commandname", command.name + " > " + argName));
                 }
-                desc.append("\n\n" + core.translate("help.commands.names") + "\n");
-                for (String name : handler.getNameHandler().getNames(command.name))
-                    desc.append("\"" + name + "\" ");
-                if (!command.getArgsList().isEmpty())
-                    desc.append("\n\n" + core.translate("help.args") + "\n");
-                for (String arg : command.getArgsList())
-                    desc.append("\"" + arg + "\" ");
+
                 builder.withDesc(desc.toString().trim());
                 answer(source, "", builder.build());
             } else {
@@ -57,7 +62,7 @@ public class CommandHelp extends BaseCommand {
                 answer(source, "", builder.build());
             }
         } else
-            execute(sender, source, "command " + name + " handler " + handler.name);
+            execute(sender, source, "command=" + name + " handler=" + handler.name);
     }
 
     @Override
@@ -76,6 +81,6 @@ public class CommandHelp extends BaseCommand {
 
     @Override
     public List<String> getArgsList() {
-        return Arrays.asList("command", "handler");
+        return Arrays.asList("command", "handler", "arg");
     }
 }

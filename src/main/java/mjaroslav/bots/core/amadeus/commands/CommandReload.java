@@ -17,19 +17,21 @@ public class CommandReload extends BaseCommandDialogYesNo {
     @Override
     public void executeYes(IUser sender, IMessage source, String args) throws Exception {
         List<String> argsParsed = AmadeusUtils.parseArgsToArray(args);
-        if (!argsParsed.isEmpty() && argsParsed.indexOf("all") != 0) {
-            if (argsParsed.get(0).toLowerCase().equals("names")) {
+        if (!argsParsed.isEmpty() && argIndex("all", argsParsed) != 0) {
+            if (argIndex("names", argsParsed) == 0) {
                 if (argsParsed.size() >= 2) {
-                    if (argsParsed.get(1).toLowerCase().equals("all"))
-                        for (CommandHandler handler : core.getCommandHandlers())
-                            handler.getNameHandler().loadNames();
+                    String value = argValue("names", argsParsed);
+                    if (value.toLowerCase().equals("all"))
+                        for (CommandHandler handler : core.getCommandHandlers()) {
+                            if (handler.getNameHandler() != null)
+                                handler.getNameHandler().loadNames();
+                        }
                     else {
-                        CommandHandler handler = core.getCommandHanler(argsParsed.get(1).toLowerCase());
-                        if (handler != null)
+                        CommandHandler handler = core.getCommandHanler(value.toLowerCase());
+                        if (handler != null && handler.hasNameHandller())
                             handler.getNameHandler().loadNames();
                         else {
-                            answerError(source,
-                                    core.translate("error.reload.nohandler.command", argsParsed.get(1).toLowerCase()));
+                            answerError(source, core.translate("error.reload.nohandler.command", value.toLowerCase()));
                             return;
                         }
                     }
@@ -38,18 +40,18 @@ public class CommandReload extends BaseCommandDialogYesNo {
                     answerError(source, core.translate("error.badargs"));
                     return;
                 }
-            } else if (argsParsed.get(0).toLowerCase().equals("configs")) {
+            } else if (argIndex("configs", argsParsed) == 0) {
                 if (argsParsed.size() >= 2) {
-                    if (argsParsed.get(1).toLowerCase().equals("all"))
+                    String value = argValue("configs", argsParsed);
+                    if (value.toLowerCase().equals("all"))
                         for (ConfigurationHandler handler : core.getConfigurationHandlers())
                             handler.readConfig();
                     else {
-                        ConfigurationHandler handler = core.getConfigurationHandler(argsParsed.get(1).toLowerCase());
+                        ConfigurationHandler handler = core.getConfigurationHandler(value.toLowerCase());
                         if (handler != null)
                             handler.readConfig();
                         else {
-                            answerError(source,
-                                    core.translate("error.reload.nohandler.config", argsParsed.get(1).toLowerCase()));
+                            answerError(source, core.translate("error.reload.nohandler.config", value.toLowerCase()));
                             return;
                         }
                     }
@@ -58,14 +60,37 @@ public class CommandReload extends BaseCommandDialogYesNo {
                     answerError(source, core.translate("error.badargs"));
                     return;
                 }
-            } else if (argsParsed.get(0).toLowerCase().equals("langs")) {
+            } else if (argIndex("perms", argsParsed) == 0) {
+                if (argsParsed.size() >= 2) {
+                    String value = argValue("perms", argsParsed);
+                    if (value.toLowerCase().equals("all"))
+                        for (CommandHandler handler : core.getCommandHandlers()) {
+                            if (handler.hasPermissionHandller())
+                                handler.getPermissionHandler().loadPermissions();
+                        }
+                    else {
+                        CommandHandler handler = core.getCommandHanler(value.toLowerCase());
+                        if (handler != null && handler.hasPermissionHandller())
+                            handler.getPermissionHandler().loadPermissions();
+                        else {
+                            answerError(source, core.translate("error.reload.nohandler.command", value.toLowerCase()));
+                            return;
+                        }
+                    }
+                    answerDone(source, core.translate("done.reload.perms"));
+                } else {
+                    answerError(source, core.translate("error.badargs"));
+                    return;
+                }
+            } else if (argIndex("langs", argsParsed) == 0) {
                 core.getLangHandler().loadLangs();
                 answerDone(source, core.translate("done.reload.langs"));
             } else
                 answerError(source, core.translate("error.badargs"));
         } else {
             for (CommandHandler handler : core.getCommandHandlers())
-                handler.getNameHandler().loadNames();
+                if (handler.getNameHandler() != null)
+                    handler.getNameHandler().loadNames();
             core.getLangHandler().loadLangs();
             for (ConfigurationHandler handler : core.getConfigurationHandlers())
                 handler.readConfig();
@@ -86,5 +111,10 @@ public class CommandReload extends BaseCommandDialogYesNo {
     @Override
     public String getHelpDesc(String args) {
         return super.getHelpDesc(args);
+    }
+    
+    @Override
+    public String getPermissions() {
+        return "admin";
     }
 }

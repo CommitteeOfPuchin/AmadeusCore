@@ -16,4 +16,6 @@ public abstract class CommandNameHandler {
     public abstract List<String> getNames(String key);
     
     public abstract void loadNames();
+    
+    public abstract List<String> getArgNames(String commandKey, String argKey);
 }

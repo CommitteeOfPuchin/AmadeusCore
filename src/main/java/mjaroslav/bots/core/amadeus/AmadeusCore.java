@@ -176,6 +176,7 @@ public abstract class AmadeusCore {
     }
 
     public void disableBot() {
+        isReady = false;
         if (client != null)
             client.logout();
     }

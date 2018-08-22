@@ -19,4 +19,9 @@ public class CommandExit extends BaseCommandDialogYesNo {
     public void executeNo(IUser sender, IMessage source, String args) throws Exception {
         answerDone(source, core.translate("bot.exit.canceled"));
     }
+    
+    @Override
+    public String getPermissions() {
+        return "owner";
+    }
 }

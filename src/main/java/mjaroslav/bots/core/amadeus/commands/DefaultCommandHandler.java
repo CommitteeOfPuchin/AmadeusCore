@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mjaroslav.bots.core.amadeus.AmadeusCore;
+import mjaroslav.bots.core.amadeus.permissions.DefaultPermissionHandler;
+import mjaroslav.bots.core.amadeus.permissions.PermissionHandler;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
@@ -11,10 +13,12 @@ public class DefaultCommandHandler extends CommandHandler {
     private final ArrayList<BaseCommand> commands = new ArrayList<BaseCommand>();
 
     private final CommandNameHandler nameHandler = new DefaultCommandNameHandler(core);
+    private final PermissionHandler permHandler = new DefaultPermissionHandler(core, this);
 
     public DefaultCommandHandler(AmadeusCore core) {
         super(core, "default");
         getNameHandler().loadNames();
+        getPermissionHandler().loadPermissions();
     }
 
     @Override
@@ -36,7 +40,13 @@ public class DefaultCommandHandler extends CommandHandler {
             if (command != null) {
                 String args = AmadeusUtils.removePreifx(commandString, core, command, false);
                 try {
-                    command.execute(event.getAuthor(), event.getMessage(), args);
+                    if (!hasPermissionHandller()
+                            || getPermissionHandler().canUseCommand(event.getAuthor(), event.getMessage(), command))
+                        command.execute(event.getAuthor(), event.getMessage(), args);
+                    else {
+                        core.sendError(event.getChannel() != null ? event.getChannel().getLongID()
+                                : event.getAuthor().getLongID(), core.translate("", command.getPermissions()));
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     core.sendError(
@@ -79,5 +89,20 @@ public class DefaultCommandHandler extends CommandHandler {
     @Override
     public BaseCommand getHelp() {
         return getCommand("help");
+    }
+
+    @Override
+    public PermissionHandler getPermissionHandler() {
+        return permHandler;
+    }
+
+    @Override
+    public boolean hasNameHandller() {
+        return true;
+    }
+
+    @Override
+    public boolean hasPermissionHandller() {
+        return true;
     }
 }

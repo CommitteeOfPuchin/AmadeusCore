@@ -6,23 +6,26 @@ import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.utils.JSONReader;
 
 public class DefaultCommandNameHandler extends CommandNameHandler {
-    public JSONReader<HashMap<String, List<String>>> reader = new JSONReader<>(new HashMap<String, List<String>>(),
-            core.folder.toPath().resolve("commandnames.json").toFile(), true);
+    public JSONReader<HashMap<String, List<String>>> readerNames = new JSONReader<HashMap<String, List<String>>>(
+            new HashMap<String, List<String>>(), core.folder.toPath().resolve("commandnames.json").toFile(), true);
+    public JSONReader<HashMap<String, List<String>>> readerArgs = new JSONReader<HashMap<String, List<String>>>(
+            new HashMap<String, List<String>>(), core.folder.toPath().resolve("commandargs.json").toFile(), true);
 
     public DefaultCommandNameHandler(AmadeusCore core) {
         super(core);
-        reader.init();
+        readerNames.init();
+        readerArgs.init();
     }
 
     @Override
     public List<String> getPrefixes() {
         ArrayList<String> result = new ArrayList<String>();
-        if (reader.json.containsKey("prefix"))
-            result.addAll(reader.json.get("prefix"));
-        else {
+        if (readerNames.json.containsKey("prefix")) {
+            result.addAll(readerNames.json.get("prefix"));
+        } else {
             result.add("execute");
-            reader.json.put("prefix", result);
-            reader.write();
+            readerNames.json.put("prefix", result);
+            readerNames.write();
         }
         return result;
     }
@@ -38,11 +41,11 @@ public class DefaultCommandNameHandler extends CommandNameHandler {
     public List<String> getNames(String key) {
         ArrayList<String> result = new ArrayList<String>();
         result.add(key);
-        if (reader.json.containsKey(key))
-            result.addAll(reader.json.get(key));
+        if (readerNames.json.containsKey(key))
+            result.addAll(readerNames.json.get(key));
         else {
-            reader.json.put(key, Collections.emptyList());
-            reader.write();
+            readerNames.json.put(key, Collections.emptyList());
+            readerNames.write();
         }
         result.sort(sort);
         return result;
@@ -50,6 +53,21 @@ public class DefaultCommandNameHandler extends CommandNameHandler {
 
     @Override
     public void loadNames() {
-        reader.read();
+        readerNames.read();
+        readerArgs.read();
+    }
+
+    @Override
+    public List<String> getArgNames(String commandKey, String key) {
+        ArrayList<String> result = new ArrayList<String>();
+        result.add(key);
+        if (readerArgs.json.containsKey(commandKey + "." + key))
+            result.addAll(readerArgs.json.get(commandKey + "." + key));
+        else {
+            readerArgs.json.put(commandKey + "." + key, Collections.emptyList());
+            readerArgs.write();
+        }
+        result.sort(sort);
+        return result;
     }
 }

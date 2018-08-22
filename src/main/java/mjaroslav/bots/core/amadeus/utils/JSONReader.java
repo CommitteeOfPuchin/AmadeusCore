@@ -1,11 +1,15 @@
 package mjaroslav.bots.core.amadeus.utils;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * Reader (wrapper) for JSON files.
@@ -38,12 +42,9 @@ public class JSONReader<T> {
     private Gson gson;
 
     /**
-     * @param object
-     *            - JSON object (default).
-     * @param file
-     *            - JSON file.
-     * @param isPretty
-     *            - pretty syntax of JSON string.
+     * @param object   - JSON object (default).
+     * @param file     - JSON file.
+     * @param isPretty - pretty syntax of JSON string.
      */
     public JSONReader(T object, File file, boolean isPretty) {
         this.json = object;
@@ -60,8 +61,7 @@ public class JSONReader<T> {
     /**
      * Get folder from file.
      *
-     * @param file
-     *            - file.
+     * @param file - file.
      * @return Folder of file.
      */
     public static File getFolder(File file) {
@@ -107,10 +107,10 @@ public class JSONReader<T> {
      * @return True if done.
      */
     @SuppressWarnings("unchecked")
-	public boolean read() {
+    public boolean read() {
         try {
             Reader reader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8);
-            json = gson.fromJson(reader, (Class<T>) json.getClass());
+            json = gson.fromJson(reader, TypeToken.get((Class<T>) json.getClass()).getType());
             reader.close();
             return true;
         } catch (IOException e) {
@@ -148,8 +148,7 @@ public class JSONReader<T> {
     /**
      * Set JSON file.
      *
-     * @param file
-     *            - new file.
+     * @param file - new file.
      * @return JSONReader with new file.
      */
     public JSONReader<T> setFile(File file) {
@@ -171,8 +170,7 @@ public class JSONReader<T> {
     /**
      * Set new GSON.
      *
-     * @param gson
-     *            - new gson.
+     * @param gson - new gson.
      * @return This reader with new gson.
      */
     public JSONReader<T> setGson(Gson gson) {
