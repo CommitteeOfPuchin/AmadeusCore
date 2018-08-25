@@ -14,7 +14,8 @@ import org.apache.logging.log4j.Logger;
 import mjaroslav.bots.core.amadeus.auth.AuthHandler;
 import mjaroslav.bots.core.amadeus.auth.DefaultAuthHandler;
 import mjaroslav.bots.core.amadeus.commands.*;
-import mjaroslav.bots.core.amadeus.config.BaseConfigurationHandler.DefaultConfigurationHandler;
+import mjaroslav.bots.core.amadeus.config.BaseConfigurationHandler;
+import mjaroslav.bots.core.amadeus.config.BaseConfigurationHandler.DefaultConfigurationJSON;
 import mjaroslav.bots.core.amadeus.config.ConfigurationHandler;
 import mjaroslav.bots.core.amadeus.lang.DefaultLangHandler;
 import mjaroslav.bots.core.amadeus.lang.LangHandler;
@@ -60,6 +61,7 @@ public abstract class AmadeusCore {
                 for (ConfigurationHandler<?> configurationHandler : configurationHandlers)
                     configurationHandler.readConfig();
                 registerCommandHandlers();
+                updateLang();
                 registerCommands();
             }
             return isReady;
@@ -101,8 +103,19 @@ public abstract class AmadeusCore {
         commandHandlers.add(new DefaultCommandHandler(this));
     }
 
+    public void updateLang() throws Exception {
+        getLangHandler().setLang(getConfig("default", DefaultConfigurationJSON.class).lang);
+        getLangHandler().loadLangs();
+    }
+    
     public void registerConfigurationHandlers() {
-        configurationHandlers.add(new DefaultConfigurationHandler(this, "default", true));
+        configurationHandlers.add(new BaseConfigurationHandler<DefaultConfigurationJSON>(this, "default",
+                new DefaultConfigurationJSON(), true));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getConfig(String handler, Class<T> type) {
+        return (T) getConfigurationHandler(handler).getConfig();
     }
 
     public int getCommandCount() {

@@ -83,7 +83,7 @@ public class CommandReload extends BaseCommandDialogYesNo {
                     return;
                 }
             } else if (argIndex("langs", argsParsed) == 0) {
-                core.getLangHandler().loadLangs();
+                core.updateLang();
                 answerDone(source, core.translate("done.reload.langs"));
             } else
                 answerError(source, core.translate("error.badargs"));
@@ -94,7 +94,7 @@ public class CommandReload extends BaseCommandDialogYesNo {
                 if (handler.hasPermissionHandller())
                     handler.getPermissionHandler().loadPermissions();
             }
-            core.getLangHandler().loadLangs();
+            core.updateLang();
             for (ConfigurationHandler<?> handler : core.getConfigurationHandlers())
                 handler.readConfig();
             answerDone(source, core.translate("done.reload.all"));
