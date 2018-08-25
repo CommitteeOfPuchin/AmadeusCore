@@ -40,12 +40,14 @@ public class DefaultCommandHandler extends CommandHandler {
             if (command != null) {
                 String args = AmadeusUtils.removePreifx(commandString, core, command, false);
                 try {
-                    if (!hasPermissionHandller()
-                            || getPermissionHandler().canUseCommand(event.getAuthor(), event.getMessage(), command))
+                    if (!hasPermissionHandller() || getPermissionHandler().canUseCommand(event.getAuthor(),
+                            event.getMessage(), command, null))
                         command.execute(event.getAuthor(), event.getMessage(), args);
                     else {
-                        core.sendError(event.getChannel() != null ? event.getChannel().getLongID()
-                                : event.getAuthor().getLongID(), core.translate("", command.getPermissions()));
+                        core.sendError(
+                                event.getChannel() != null ? event.getChannel().getLongID()
+                                        : event.getAuthor().getLongID(),
+                                core.translate("perms.nohave", command.getCommandPermission()));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

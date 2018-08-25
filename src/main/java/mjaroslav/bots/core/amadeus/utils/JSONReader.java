@@ -9,7 +9,6 @@ import java.nio.file.Files;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * Reader (wrapper) for JSON files.
@@ -110,7 +109,7 @@ public class JSONReader<T> {
     public boolean read() {
         try {
             Reader reader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8);
-            json = gson.fromJson(reader, TypeToken.get((Class<T>) json.getClass()).getType());
+            json = gson.fromJson(reader, (Class<T>) json.getClass());
             reader.close();
             return true;
         } catch (IOException e) {

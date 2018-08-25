@@ -1,5 +1,6 @@
 package mjaroslav.bots.core.amadeus.commands;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -92,11 +93,30 @@ public abstract class BaseCommand {
         return Collections.emptyList();
     }
 
-    public String getPermissions() {
-        return handler.hasPermissionHandller() ? handler.getPermissionHandler().getDefault() : "";
+    public List<String> getPermissions() {
+        ArrayList<String> result = new ArrayList<String>();
+        result.add(getCommandPermission());
+        if (getArgsList().size() > 0) {
+            result.add(getAllArgsPermission());
+            for (String arg : getArgsList())
+                result.add(getArgPermission(arg));
+        }
+        return result;
     }
 
-    public String getPermissions(String arg) {
-        return getPermissions();
+    public String getCommandPermission() {
+        return handler.name + "." + name;
+    }
+
+    public String getArgPermission(String arg) {
+        return handler.name + "." + name + "." + arg;
+    }
+
+    public String getAllArgsPermission() {
+        return handler.name + "." + name + ".*";
+    }
+    
+    public boolean onlyOwner() {
+        return false;
     }
 }

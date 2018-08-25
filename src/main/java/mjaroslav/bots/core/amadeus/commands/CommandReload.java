@@ -44,10 +44,10 @@ public class CommandReload extends BaseCommandDialogYesNo {
                 if (argsParsed.size() >= 2) {
                     String value = argValue("configs", argsParsed);
                     if (value.toLowerCase().equals("all"))
-                        for (ConfigurationHandler handler : core.getConfigurationHandlers())
+                        for (ConfigurationHandler<?> handler : core.getConfigurationHandlers())
                             handler.readConfig();
                     else {
-                        ConfigurationHandler handler = core.getConfigurationHandler(value.toLowerCase());
+                        ConfigurationHandler<?> handler = core.getConfigurationHandler(value.toLowerCase());
                         if (handler != null)
                             handler.readConfig();
                         else {
@@ -88,11 +88,14 @@ public class CommandReload extends BaseCommandDialogYesNo {
             } else
                 answerError(source, core.translate("error.badargs"));
         } else {
-            for (CommandHandler handler : core.getCommandHandlers())
+            for (CommandHandler handler : core.getCommandHandlers()) {
                 if (handler.getNameHandler() != null)
                     handler.getNameHandler().loadNames();
+                if (handler.hasPermissionHandller())
+                    handler.getPermissionHandler().loadPermissions();
+            }
             core.getLangHandler().loadLangs();
-            for (ConfigurationHandler handler : core.getConfigurationHandlers())
+            for (ConfigurationHandler<?> handler : core.getConfigurationHandlers())
                 handler.readConfig();
             answerDone(source, core.translate("done.reload.all"));
         }
@@ -111,10 +114,5 @@ public class CommandReload extends BaseCommandDialogYesNo {
     @Override
     public String getHelpDesc(String args) {
         return super.getHelpDesc(args);
-    }
-    
-    @Override
-    public String getPermissions() {
-        return "admin";
     }
 }

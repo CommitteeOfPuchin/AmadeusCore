@@ -29,7 +29,13 @@ public class CommandStatus extends BaseCommand {
         max /= 8388608;
         curr /= 8388608;
         answer.append(core.translate("status.memory", curr, max, per) + "\n");
-        answer(source, "", new EmbedBuilder().withThumbnail(core.getClient().getOurUser().getAvatarURL())
-                .withColor(0x00FF00).appendDesc(answer.toString()).withAuthorName("AmadeusCore > " + core.name).build());
+        answer(source, "",
+                new EmbedBuilder().withThumbnail(core.getClient().getOurUser().getAvatarURL().replace("webp", "png"))
+                        .withColor(0x00FF00).appendDesc(answer.toString())
+                        .withFooterIcon(core.getClient().getUserByID(core.devId).getAvatarURL().replace("webp", "png"))
+                        .withAuthorName("AmadeusCore > " + core.name)
+                        .withFooterText(
+                                core.translate("status.owner", "@" + core.getClient().getUserByID(core.devId).getName() + "#" + core.getClient().getUserByID(core.devId).getDiscriminator()))
+                        .build());
     }
 }

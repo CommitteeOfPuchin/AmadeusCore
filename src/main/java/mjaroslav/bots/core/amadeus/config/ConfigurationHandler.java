@@ -4,7 +4,7 @@ import java.io.File;
 
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 
-public abstract class ConfigurationHandler {
+public abstract class ConfigurationHandler<T> {
     public final AmadeusCore core;
 
     public final String name;
@@ -17,12 +17,10 @@ public abstract class ConfigurationHandler {
     public abstract void readConfig() throws Exception;
 
     public abstract void writeConfig() throws Exception;
-
-    public abstract void setValue(String fieldName, Object value) throws Exception;
-
-    public abstract <E> E getValue(String fieldName, Class<? extends E> type) throws Exception;
-
+    
     public File getFolder() {
         return core.folder.toPath().resolve("configurations").toFile();
     }
-}
+    
+    public abstract T getConfig();
+ }

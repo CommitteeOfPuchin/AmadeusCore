@@ -3,9 +3,13 @@ package mjaroslav.bots.core.amadeus;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import mjaroslav.bots.core.amadeus.auth.AuthHandler;
 import mjaroslav.bots.core.amadeus.auth.DefaultAuthHandler;
@@ -27,14 +31,18 @@ public abstract class AmadeusCore {
     private IDiscordClient client;
     private AuthHandler authHandler;
     public final ArrayList<CommandHandler> commandHandlers = new ArrayList<CommandHandler>();
-    public final ArrayList<ConfigurationHandler> configurationHandlers = new ArrayList<ConfigurationHandler>();
+    public final ArrayList<ConfigurationHandler<?>> configurationHandlers = new ArrayList<ConfigurationHandler<?>>();
     private LangHandler langHandler;
     private boolean isReady = false;
     public final File folder;
+    public final long devId;
+    public final Logger log;
 
-    public AmadeusCore(String name, String folder) {
+    public AmadeusCore(String name, String folder, long devId) {
         this.name = name;
         this.folder = new File(folder);
+        this.devId = devId;
+        log = LogManager.getLogger(name);
     }
 
     public boolean initBot() {
@@ -49,7 +57,7 @@ public abstract class AmadeusCore {
             if (isReady) {
                 getLangHandler().loadLangs();
                 registerConfigurationHandlers();
-                for (ConfigurationHandler configurationHandler : configurationHandlers)
+                for (ConfigurationHandler<?> configurationHandler : configurationHandlers)
                     configurationHandler.readConfig();
                 registerCommandHandlers();
                 registerCommands();
@@ -61,33 +69,40 @@ public abstract class AmadeusCore {
         return false;
     }
 
+    public List<String> getPermissionsList(String handlerName) {
+        ArrayList<String> result = new ArrayList<String>();
+        CommandHandler handler = getCommandHanler(handlerName);
+        if (handler != null) {
+            result.add(handler.name + ".*");
+            for (BaseCommand command : handler.getCommandList()) {
+                result.add(handler.name + "." + command.name);
+                result.add(handler.name + "." + command.name + ".*");
+                for (String arg : command.getArgsList())
+                    result.add(handler.name + "." + command.name + "." + arg);
+            }
+        }
+        return result;
+    }
+
+    public List<String> getPermissionsList() {
+        ArrayList<String> result = new ArrayList<String>();
+        result.add("*"); // Admin
+        result.add("***"); // Owner
+        for (CommandHandler handler : commandHandlers) {
+            result.add(handler.name); // Handler
+            result.add(handler.name + ".*"); // Admin handler
+            for (BaseCommand command : handler.getCommandList())
+                result.addAll(command.getPermissions());
+        }
+        return result;
+    }
+
     public void registerCommandHandlers() {
         commandHandlers.add(new DefaultCommandHandler(this));
     }
 
     public void registerConfigurationHandlers() {
         configurationHandlers.add(new DefaultConfigurationHandler(this, "default", true));
-    }
-
-    public void setValue(String handlerName, String fieldName, Object value) throws Exception {
-        ConfigurationHandler handler = getConfigurationHandler(handlerName);
-        if (handler != null)
-            handler.setValue(fieldName, value);
-    }
-
-    public void setValue(String fieldName, Object value) throws Exception {
-        setValue("default", fieldName, value);
-    }
-
-    public <T> T getValue(String handlerName, String fieldName, Class<? extends T> value) throws Exception {
-        ConfigurationHandler handler = getConfigurationHandler(handlerName);
-        if (handler != null)
-            return handler.getValue(fieldName, value);
-        return null;
-    }
-
-    public <T> T getValue(String fieldName, Class<? extends T> value) throws Exception {
-        return getValue("default", fieldName, value);
     }
 
     public int getCommandCount() {
@@ -97,8 +112,8 @@ public abstract class AmadeusCore {
         return result;
     }
 
-    public ConfigurationHandler getConfigurationHandler(String name) {
-        for (ConfigurationHandler configurationHandler : configurationHandlers)
+    public ConfigurationHandler<?> getConfigurationHandler(String name) {
+        for (ConfigurationHandler<?> configurationHandler : configurationHandlers)
             if (configurationHandler.name.equals(name))
                 return configurationHandler;
         return null;
@@ -213,8 +228,11 @@ public abstract class AmadeusCore {
         return commandHandlers;
     }
 
-    public ArrayList<ConfigurationHandler> getConfigurationHandlers() {
+    public ArrayList<ConfigurationHandler<?>> getConfigurationHandlers() {
         return configurationHandlers;
+    }
+
+    public void onReady() {
     }
 
     public static class EventHandler {
@@ -226,13 +244,21 @@ public abstract class AmadeusCore {
 
         @EventSubscriber
         public void onReady(ReadyEvent event) {
-            System.out.println("Bot ready");
+            core.log.info("Bot ready!");
             core.isReady = true;
+            core.onReady();
         }
 
         @EventSubscriber
         public void onMessage(MessageReceivedEvent event) {
-            System.out.println(event.getAuthor().getName() + ": " + event.getMessage().getContent());
+            String from = "";
+            if (event.getMessage().getChannel() != null)
+                from = "[" + new String(event.getChannel().getGuild().getName().getBytes(), StandardCharsets.UTF_8)
+                        + ":" + new String(event.getChannel().getName().getBytes(), StandardCharsets.UTF_8) + "] "
+                        + event.getAuthor().getDisplayName(event.getChannel().getGuild()) + ": ";
+            else
+                from = "[PM] " + event.getAuthor() + ": ";
+            core.log.info(from + event.getMessage().getContent());
             for (CommandHandler commandHandler : core.getCommandHandlers())
                 if (commandHandler.executeCommand(event))
                     break;
