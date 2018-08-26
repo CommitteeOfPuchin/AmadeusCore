@@ -21,7 +21,7 @@ public class CommandHelp extends BaseCommand {
             HashMap<String, String> argsParsed = AmadeusUtils.parseArgsToMap(args);
             CommandHandler handler = null;
             if (hasArg("handler", argsParsed))
-                handler = core.getCommandHanler(argValue("handler", argsParsed));
+                handler = core.getCommandHandler(argValue("handler", argsParsed));
             if (handler == null)
                 handler = this.handler;
             BaseCommand command = null;
@@ -30,7 +30,7 @@ public class CommandHelp extends BaseCommand {
             EmbedBuilder builder = new EmbedBuilder().withColor(0x00FF00);
             StringBuilder desc = new StringBuilder();
             if (command != null) {
-                builder.withAuthorName(core.translate("help.commandname", command.name));
+                builder.withAuthorName(core.translate("help.commandname", handler.name + " > " + command.name));
                 String argName = "";
                 if (hasArg("arg", argsParsed))
                     argName = argValue("arg", argsParsed);
@@ -48,7 +48,8 @@ public class CommandHelp extends BaseCommand {
                     desc.append("\n\n" + core.translate("help.commands.names") + "\n");
                     for (String name : handler.getNameHandler().getArgNames(command.name, argName))
                         desc.append("\"" + name + "\" ");
-                    builder.withAuthorName(core.translate("help.commandname", command.name + " > " + argName));
+                    builder.withAuthorName(
+                            core.translate("help.commandname", handler.name + " > " + command.name + " > " + argName));
                 }
 
                 builder.withDesc(desc.toString().trim());

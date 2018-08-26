@@ -23,6 +23,20 @@ public abstract class BaseCommand {
 
     public abstract void execute(IUser sender, IMessage source, String args) throws Exception;
 
+    public boolean isYes(String arg) {
+        for (String checkArg : handler.getNameHandler().getArgNames("all", "true"))
+            if (arg.toLowerCase().equals(checkArg))
+                return true;
+        return false;
+    }
+    
+    public boolean isAll(String arg) {
+        for (String checkArg : handler.getNameHandler().getArgNames("all", "all"))
+            if (arg.toLowerCase().equals(checkArg))
+                return true;
+        return false;
+    }
+
     public boolean hasArg(String arg, List<String> argsParsed) {
         for (String checkArg : handler.getNameHandler().getArgNames(name, arg))
             if (argsParsed.contains(checkArg))
@@ -115,7 +129,7 @@ public abstract class BaseCommand {
     public String getAllArgsPermission() {
         return handler.name + "." + name + ".*";
     }
-    
+
     public boolean onlyOwner() {
         return false;
     }

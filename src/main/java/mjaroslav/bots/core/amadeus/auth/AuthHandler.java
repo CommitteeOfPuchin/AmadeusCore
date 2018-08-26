@@ -18,6 +18,6 @@ public abstract class AuthHandler {
     public abstract File getFolder();
 
     public final File getFile() {
-        return getFolder().toPath().resolve(core.name + ".json").toFile();
+        return getFolder().toPath().resolve(core.getName() + ".json").toFile();
     }
 }

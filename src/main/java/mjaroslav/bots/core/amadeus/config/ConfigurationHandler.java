@@ -4,23 +4,30 @@ import java.io.File;
 
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 
-public abstract class ConfigurationHandler<T> {
+public abstract class ConfigurationHandler {
     public final AmadeusCore core;
-
     public final String name;
-    
+
     public ConfigurationHandler(AmadeusCore core, String name) {
         this.core = core;
         this.name = name;
     }
 
     public abstract void readConfig() throws Exception;
-
+    
+    public abstract void afterLoad() throws Exception;
+    
     public abstract void writeConfig() throws Exception;
-    
-    public File getFolder() {
-        return core.folder.toPath().resolve("configurations").toFile();
+
+    public File getFile() {
+        return getFolder().toPath().resolve(name + "." + getExt()).toFile();
     }
-    
-    public abstract T getConfig();
- }
+
+    public String getExt() {
+        return "json";
+    }
+
+    public File getFolder() {
+        return core.getFolder().toPath().resolve("configurations").toFile();
+    }
+}

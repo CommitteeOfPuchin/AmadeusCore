@@ -29,9 +29,9 @@ public abstract class CommandHandler {
 
     public abstract CommandNameHandler getNameHandler();
 
-    public abstract BaseCommand getHelp();
-
     public abstract boolean hasPermissionHandller();
 
     public abstract PermissionHandler getPermissionHandler();
+
+    public abstract void registerCommands();
 }

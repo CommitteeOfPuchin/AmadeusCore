@@ -1,9 +1,6 @@
 package mjaroslav.bots.core.amadeus.permissions;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.commands.BaseCommand;
@@ -17,9 +14,9 @@ import sx.blah.discord.handle.obj.Permissions;
 
 public class DefaultPermissionHandler extends PermissionHandler {
     public final JSONReader<HashMap<String, List<String>>> readerList = new JSONReader<HashMap<String, List<String>>>(
-            new HashMap<String, List<String>>(), core.folder.toPath().resolve("permissionslist.json").toFile(), true);
+            new HashMap<String, List<String>>(), getFolder().toPath().resolve("list.json").toFile(), true);
     public final JSONReader<HashMap<String, String>> readerMap = new JSONReader<HashMap<String, String>>(
-            new HashMap<String, String>(), core.folder.toPath().resolve("permissionsmap.json").toFile(), true);
+            new HashMap<String, String>(), getFolder().toPath().resolve("map.json").toFile(), true);
 
     public static final String FORMATUSER = "user:%s";
     public static final String FORMATROLE = "role:%s";
@@ -34,7 +31,7 @@ public class DefaultPermissionHandler extends PermissionHandler {
         readerList.defaults.put(getOwner(), OWNER);
         readerList.defaults.put(getDefault(), DEFAULT);
         readerList.init();
-        readerMap.defaults.put(String.format(FORMATUSER, core.devId), getOwner());
+        readerMap.defaults.put(String.format(FORMATUSER, core.getDevId()), getOwner());
         readerMap.init();
     }
 
@@ -102,5 +99,17 @@ public class DefaultPermissionHandler extends PermissionHandler {
     public void loadPermissions() {
         readerList.read();
         readerMap.read();
+    }
+
+    @Override
+    public List<String> getUserPermissions(IUser sender, IMessage source) {
+        ArrayList<String> result = new ArrayList<String>(
+                get(readerMap.json.get(String.format(FORMATUSER, sender.getLongID()))));
+        if (source != null && source.getChannel() != null)
+            for (IRole role : sender.getRolesForGuild(source.getGuild()))
+                for (String perm : get(readerMap.json.get(String.format(FORMATROLE, role.getLongID()))))
+                    if (!result.contains(perm))
+                        result.add(perm);
+        return result;
     }
 }

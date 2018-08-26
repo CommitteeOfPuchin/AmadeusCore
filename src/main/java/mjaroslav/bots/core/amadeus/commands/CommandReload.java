@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import mjaroslav.bots.core.amadeus.AmadeusCore;
-import mjaroslav.bots.core.amadeus.config.ConfigurationHandler;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
@@ -19,84 +18,18 @@ public class CommandReload extends BaseCommandDialogYesNo {
         List<String> argsParsed = AmadeusUtils.parseArgsToArray(args);
         if (!argsParsed.isEmpty() && argIndex("all", argsParsed) != 0) {
             if (argIndex("names", argsParsed) == 0) {
-                if (argsParsed.size() >= 2) {
-                    String value = argValue("names", argsParsed);
-                    if (value.toLowerCase().equals("all"))
-                        for (CommandHandler handler : core.getCommandHandlers()) {
-                            if (handler.getNameHandler() != null)
-                                handler.getNameHandler().loadNames();
-                        }
-                    else {
-                        CommandHandler handler = core.getCommandHanler(value.toLowerCase());
-                        if (handler != null && handler.hasNameHandller())
-                            handler.getNameHandler().loadNames();
-                        else {
-                            answerError(source, core.translate("error.reload.nohandler.command", value.toLowerCase()));
-                            return;
-                        }
-                    }
-                    answerDone(source, core.translate("done.reload.names"));
-                } else {
-                    answerError(source, core.translate("error.badargs"));
-                    return;
-                }
+                core.loadNames();
             } else if (argIndex("configs", argsParsed) == 0) {
-                if (argsParsed.size() >= 2) {
-                    String value = argValue("configs", argsParsed);
-                    if (value.toLowerCase().equals("all"))
-                        for (ConfigurationHandler<?> handler : core.getConfigurationHandlers())
-                            handler.readConfig();
-                    else {
-                        ConfigurationHandler<?> handler = core.getConfigurationHandler(value.toLowerCase());
-                        if (handler != null)
-                            handler.readConfig();
-                        else {
-                            answerError(source, core.translate("error.reload.nohandler.config", value.toLowerCase()));
-                            return;
-                        }
-                    }
-                    answerDone(source, core.translate("done.reload.configs"));
-                } else {
-                    answerError(source, core.translate("error.badargs"));
-                    return;
-                }
+                core.loadConfigs();
             } else if (argIndex("perms", argsParsed) == 0) {
-                if (argsParsed.size() >= 2) {
-                    String value = argValue("perms", argsParsed);
-                    if (value.toLowerCase().equals("all"))
-                        for (CommandHandler handler : core.getCommandHandlers()) {
-                            if (handler.hasPermissionHandller())
-                                handler.getPermissionHandler().loadPermissions();
-                        }
-                    else {
-                        CommandHandler handler = core.getCommandHanler(value.toLowerCase());
-                        if (handler != null && handler.hasPermissionHandller())
-                            handler.getPermissionHandler().loadPermissions();
-                        else {
-                            answerError(source, core.translate("error.reload.nohandler.command", value.toLowerCase()));
-                            return;
-                        }
-                    }
-                    answerDone(source, core.translate("done.reload.perms"));
-                } else {
-                    answerError(source, core.translate("error.badargs"));
-                    return;
-                }
+                core.loadPerms();
             } else if (argIndex("langs", argsParsed) == 0) {
-                core.updateLang();
+                core.loadLangs();
                 answerDone(source, core.translate("done.reload.langs"));
             } else
                 answerError(source, core.translate("error.badargs"));
         } else {
-            for (CommandHandler handler : core.getCommandHandlers()) {
-                if (handler.getNameHandler() != null)
-                    handler.getNameHandler().loadNames();
-                if (handler.hasPermissionHandller())
-                    handler.getPermissionHandler().loadPermissions();
-            }
-            core.updateLang();
-            for (ConfigurationHandler<?> handler : core.getConfigurationHandlers())
-                handler.readConfig();
+            core.loadAll();
             answerDone(source, core.translate("done.reload.all"));
         }
     }

@@ -6,12 +6,12 @@ import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.lang.DefaultLangHandler;
 import mjaroslav.bots.core.amadeus.utils.JSONReader;
 
-public class BaseConfigurationHandler<T> extends ConfigurationHandler<T> {
-    public final JSONReader<T> reader;
+public class DefaultConfiguration extends ConfigurationHandler {
+    public final JSONReader<JSONDefaultConfiguration> reader = new JSONReader<JSONDefaultConfiguration>(
+            new JSONDefaultConfiguration(), getFile(), true);
 
-    public BaseConfigurationHandler(AmadeusCore core, String name, T defaultObject, boolean pretty) {
-        super(core, name);
-        reader = new JSONReader<T>(defaultObject, getFolder().toPath().resolve(name + ".json").toFile(), pretty);
+    public DefaultConfiguration(AmadeusCore core) {
+        super(core, "default");
         reader.init();
     }
 
@@ -26,11 +26,11 @@ public class BaseConfigurationHandler<T> extends ConfigurationHandler<T> {
     }
 
     @Override
-    public T getConfig() {
-        return reader.json;
+    public void afterLoad() throws Exception {
+        core.getLangHandler().setLang(reader.json.lang);
     }
 
-    public static class DefaultConfigurationJSON {
+    public static class JSONDefaultConfiguration {
         @SerializedName("language")
         public String lang = DefaultLangHandler.defaultLang;
     }

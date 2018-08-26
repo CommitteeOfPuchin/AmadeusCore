@@ -129,4 +129,25 @@ public class AmadeusUtils {
     public static String removePreifx(String text, AmadeusCore core, BaseCommand command, boolean checkSpace) {
         return removePreifx(text, core, command.handler.getNameHandler().getNames(command.name), checkSpace);
     }
+
+    public static void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void waitAction(long checkCooldown, int checkCount, Action action) {
+        int checkPos = 0;
+        while (!action.done() && ((checkCount < 0) || (checkPos < checkCount))) {
+            sleep(checkCooldown);
+            if (checkCount > 0)
+                checkPos++;
+        }
+    }
+
+    public static interface Action {
+        public boolean done();
+    }
 }

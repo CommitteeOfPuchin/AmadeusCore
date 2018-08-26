@@ -19,10 +19,10 @@ public class CommandStatus extends BaseCommand {
         answer.append(core.translate("status.users", core.getClient().getUsers().size()) + "\n");
         answer.append(core.translate("status.channels", core.getClient().getChannels().size()) + "\n\n");
         answer.append(core.translate("status.bot") + "\n");
-        answer.append(core.translate("status.handlers", core.getCommandHandlers().size()) + "\n");
+        answer.append(core.translate("status.handlers", core.listOfCommandHandlers().size()) + "\n");
         answer.append(core.translate("status.commands", core.getCommandCount()) + "\n");
         answer.append(core.translate("status.langs", core.getLangHandler().getLangs().size()) + "\n");
-        answer.append(core.translate("status.configs", core.getConfigurationHandlers().size()) + "\n");
+        answer.append(core.translate("status.configs", core.listOfConfigurationHandlers().size()) + "\n");
         double max = Runtime.getRuntime().maxMemory();
         double curr = max - Runtime.getRuntime().freeMemory();
         String per = String.format("%.2f", curr * 100F / max) + "%";
@@ -32,10 +32,13 @@ public class CommandStatus extends BaseCommand {
         answer(source, "",
                 new EmbedBuilder().withThumbnail(core.getClient().getOurUser().getAvatarURL().replace("webp", "png"))
                         .withColor(0x00FF00).appendDesc(answer.toString())
-                        .withFooterIcon(core.getClient().getUserByID(core.devId).getAvatarURL().replace("webp", "png"))
-                        .withAuthorName("AmadeusCore > " + core.name)
+                        .withFooterIcon(
+                                core.getClient().getUserByID(core.getDevId()).getAvatarURL().replace("webp", "png"))
+                        .withAuthorName("AmadeusCore > " + core.getName())
                         .withFooterText(
-                                core.translate("status.owner", "@" + core.getClient().getUserByID(core.devId).getName() + "#" + core.getClient().getUserByID(core.devId).getDiscriminator()))
+                                core.translate("status.owner",
+                                        "@" + core.getClient().getUserByID(core.getDevId()).getName() + "#"
+                                                + core.getClient().getUserByID(core.getDevId()).getDiscriminator()))
                         .build());
     }
 }

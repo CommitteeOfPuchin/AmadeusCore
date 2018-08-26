@@ -21,7 +21,7 @@ public abstract class BaseCommandDialogYesNo extends BaseCommand {
         if (!cache.containsKey(source.getAuthor().getLongID())) {
             cache.put(source.getAuthor().getLongID(), args);
             answerWarn(source, core.translate("answer.dialogyesno"));
-        } else if (argsParsed.get(0).toLowerCase().equals("true")) {
+        } else if (isYes(argsParsed.get(0))) {
             if (cache.containsKey(source.getAuthor().getLongID())) {
                 String temp = cache.get(source.getAuthor().getLongID());
                 cache.remove(source.getAuthor().getLongID());

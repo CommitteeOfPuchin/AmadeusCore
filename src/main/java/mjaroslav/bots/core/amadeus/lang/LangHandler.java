@@ -21,6 +21,6 @@ public abstract class LangHandler {
     public abstract List<String> getLangs();
 
     public File getFolder() {
-        return core.folder.toPath().resolve("languages").toFile();
+        return core.getFolder().toPath().resolve("languages").toFile();
     }
 }

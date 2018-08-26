@@ -7,12 +7,12 @@ import mjaroslav.bots.core.amadeus.utils.JSONReader;
 
 public class DefaultCommandNameHandler extends CommandNameHandler {
     public JSONReader<HashMap<String, List<String>>> readerNames = new JSONReader<HashMap<String, List<String>>>(
-            new HashMap<String, List<String>>(), core.folder.toPath().resolve("commandnames.json").toFile(), true);
+            new HashMap<String, List<String>>(), getFolder().toPath().resolve("names.json").toFile(), true);
     public JSONReader<HashMap<String, List<String>>> readerArgs = new JSONReader<HashMap<String, List<String>>>(
-            new HashMap<String, List<String>>(), core.folder.toPath().resolve("commandargs.json").toFile(), true);
+            new HashMap<String, List<String>>(), getFolder().toPath().resolve("args.json").toFile(), true);
 
-    public DefaultCommandNameHandler(AmadeusCore core) {
-        super(core);
+    public DefaultCommandNameHandler(AmadeusCore core, CommandHandler handler) {
+        super(core, handler);
         readerNames.init();
         readerArgs.init();
     }

@@ -1,6 +1,7 @@
 package mjaroslav.bots.core.amadeus.commands;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import mjaroslav.bots.core.amadeus.AmadeusCore;
@@ -10,15 +11,24 @@ import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 public class DefaultCommandHandler extends CommandHandler {
-    private final ArrayList<BaseCommand> commands = new ArrayList<BaseCommand>();
+    private final HashMap<String, BaseCommand> commands = new HashMap<String, BaseCommand>();
 
-    private final CommandNameHandler nameHandler = new DefaultCommandNameHandler(core);
+    private final CommandNameHandler nameHandler = new DefaultCommandNameHandler(core, this);
     private final PermissionHandler permHandler = new DefaultPermissionHandler(core, this);
 
-    public DefaultCommandHandler(AmadeusCore core) {
-        super(core, "default");
+    public DefaultCommandHandler(AmadeusCore core, String name) {
+        super(core, name);
         getNameHandler().loadNames();
         getPermissionHandler().loadPermissions();
+    }
+
+    @Override
+    public void registerCommands() {
+        registerCommand(new CommandHelp(core, this));
+        registerCommand(new CommandStatus(core, this));
+        registerCommand(new CommandReload(core, this));
+        registerCommand(new CommandExit(core, this));
+        registerCommand(new CommandPermsInfo(core, this));
     }
 
     @Override
@@ -28,7 +38,7 @@ public class DefaultCommandHandler extends CommandHandler {
 
     @Override
     public List<BaseCommand> getCommandList() {
-        return commands;
+        return new ArrayList<BaseCommand>(commands.values());
     }
 
     @Override
@@ -75,22 +85,12 @@ public class DefaultCommandHandler extends CommandHandler {
 
     @Override
     public void registerCommand(BaseCommand command) {
-        for (BaseCommand checkCommand : commands)
-            for (String checkCommandName : getNameHandler().getNames(checkCommand.name))
-                for (String commandName : getNameHandler().getNames(command.name))
-                    if (checkCommandName.equals(commandName))
-                        return;
-        commands.add(command);
+        commands.put(command.name, command);
     }
 
     @Override
     public CommandNameHandler getNameHandler() {
         return nameHandler;
-    }
-
-    @Override
-    public BaseCommand getHelp() {
-        return getCommand("help");
     }
 
     @Override
