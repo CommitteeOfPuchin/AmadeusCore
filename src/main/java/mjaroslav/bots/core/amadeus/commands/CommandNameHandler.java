@@ -21,8 +21,8 @@ public abstract class CommandNameHandler {
     public abstract void loadNames();
 
     public abstract List<String> getArgNames(String commandKey, String argKey);
-    
+
     public File getFolder() {
-        return core.getFolder().toPath().resolve("commands/" + handler.name).toFile();
+        return core.info.getFolder().toPath().resolve("commands/" + handler.name).toFile();
     }
 }

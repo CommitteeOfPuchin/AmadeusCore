@@ -6,6 +6,8 @@ import java.util.List;
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 
 public abstract class LangHandler {
+    public static final String defaultLang = "english";
+
     public final AmadeusCore core;
 
     public LangHandler(AmadeusCore core) {
@@ -21,6 +23,6 @@ public abstract class LangHandler {
     public abstract List<String> getLangs();
 
     public File getFolder() {
-        return core.getFolder().toPath().resolve("languages").toFile();
+        return core.info.getFolder().toPath().resolve("languages").toFile();
     }
 }

@@ -2,17 +2,19 @@ package mjaroslav.bots.core.amadeus.auth;
 
 import java.awt.Desktop;
 import java.io.File;
+import java.io.IOException;
 
 import com.google.gson.annotations.SerializedName;
 
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
+import mjaroslav.bots.core.amadeus.utils.AmadeusUtils.Action;
 import mjaroslav.bots.core.amadeus.utils.JSONUtils;
 
-public class DefaultAuthHandler extends AuthHandler {
+public class DefaultUserHomeAuthHandler extends AuthHandler {
     public static final String TOKENPLACEHOLDER = "ENTER TOKEN HERE AND CLOSE";
 
-    public DefaultAuthHandler(AmadeusCore core) {
+    public DefaultUserHomeAuthHandler(AmadeusCore core) {
         super(core);
     }
 
@@ -69,9 +71,16 @@ public class DefaultAuthHandler extends AuthHandler {
                     JSONUtils.toJson(file, token, true);
                 }
                 Desktop.getDesktop().open(file);
-                while (JSONUtils.fromJson(file, TokenObject.class).token.equals(TOKENPLACEHOLDER)) {
-                    Thread.sleep(3000);
-                }
+                AmadeusUtils.waitAction(360000L, new Action() {
+                    @Override
+                    public boolean done() {
+                        try {
+                            return !JSONUtils.fromJson(file, TokenObject.class).token.equals(TOKENPLACEHOLDER);
+                        } catch (IOException e) {
+                            return true;
+                        }
+                    }
+                });
                 return JSONUtils.fromJson(file, TokenObject.class).token;
             }
         } catch (Exception e) {

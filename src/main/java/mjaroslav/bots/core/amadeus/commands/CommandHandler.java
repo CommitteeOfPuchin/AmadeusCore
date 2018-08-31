@@ -3,7 +3,6 @@ package mjaroslav.bots.core.amadeus.commands;
 import java.util.List;
 
 import mjaroslav.bots.core.amadeus.AmadeusCore;
-import mjaroslav.bots.core.amadeus.permissions.PermissionHandler;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 public abstract class CommandHandler {
@@ -28,10 +27,6 @@ public abstract class CommandHandler {
     public abstract boolean hasNameHandller();
 
     public abstract CommandNameHandler getNameHandler();
-
-    public abstract boolean hasPermissionHandller();
-
-    public abstract PermissionHandler getPermissionHandler();
 
     public abstract void registerCommands();
 }

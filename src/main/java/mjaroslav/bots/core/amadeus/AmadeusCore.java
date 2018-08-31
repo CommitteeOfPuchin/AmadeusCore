@@ -1,6 +1,5 @@
 package mjaroslav.bots.core.amadeus;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
@@ -13,7 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import mjaroslav.bots.core.amadeus.auth.AuthHandler;
-import mjaroslav.bots.core.amadeus.auth.DefaultAuthHandler;
+import mjaroslav.bots.core.amadeus.auth.DefaultUserHomeAuthHandler;
 import mjaroslav.bots.core.amadeus.commands.BaseCommand;
 import mjaroslav.bots.core.amadeus.commands.CommandHandler;
 import mjaroslav.bots.core.amadeus.commands.DefaultCommandHandler;
@@ -21,8 +20,11 @@ import mjaroslav.bots.core.amadeus.config.ConfigurationHandler;
 import mjaroslav.bots.core.amadeus.config.DefaultConfiguration;
 import mjaroslav.bots.core.amadeus.lang.DefaultLangHandler;
 import mjaroslav.bots.core.amadeus.lang.LangHandler;
+import mjaroslav.bots.core.amadeus.permissions.DefaultPermissionHandler;
+import mjaroslav.bots.core.amadeus.permissions.PermissionHandler;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils.Action;
+import mjaroslav.bots.core.amadeus.utils.JSONUtils;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
@@ -40,26 +42,46 @@ public abstract class AmadeusCore {
     private final HashMap<String, CommandHandler> commands = new HashMap<String, CommandHandler>();
     private final HashMap<String, ConfigurationHandler> configs = new HashMap<String, ConfigurationHandler>();
     private LangHandler langs;
+    private PermissionHandler permissions;
 
     //
     // Other
     //
-    public final Logger log = LogManager.getLogger(getName());
+    public final Logger log;
     private IDiscordClient client;
     private boolean isReady = false;
+    public boolean devMode = false;
+    public boolean hideInvite = true;
 
     //
     // Defaults
     //
-    public final DefaultConfiguration DEFAULTCONFIG = new DefaultConfiguration(this);
-    
-    // Bot (program) name, NO DISCORD APP NAME.
-    public abstract String getName();
-    // Dir for bot files (configs, langs, etc).
-    public abstract long getDevId();
-    // Developer's discord ID.
-    public abstract File getFolder();
-    
+    public final DefaultConfiguration DEFAULTCONFIG;
+
+    public final BotInfo info;
+
+    public AmadeusCore() throws Exception {
+        info = JSONUtils.fromJson(getClass().getResourceAsStream("/botinfo.json"), BotInfo.class);
+        if (!info.valid())
+            throw new IllegalArgumentException("Error in 'name', 'dev_ids' or 'folder' field!");
+        info.core = this;
+        log = LogManager.getLogger(info.getName());
+        DEFAULTCONFIG = new DefaultConfiguration(this);
+    }
+
+    /**
+     * Main bot object
+     * 
+     * @param name   Bot (program) name, NO DISCORD APP NAME.
+     * @param devId  Developer's discord ID.
+     * @param folder Dir for bot files (configs, langs, etc).
+     */
+    public AmadeusCore(String name, long[] devIds, String folder) {
+        info = new BotInfo(this, name, devIds, folder);
+        log = LogManager.getLogger(name);
+        DEFAULTCONFIG = new DefaultConfiguration(this);
+    }
+
     /**
      * Just call it when your bot will be ready.
      * 
@@ -68,25 +90,25 @@ public abstract class AmadeusCore {
     public boolean startBot() {
         try {
             client = new ClientBuilder().withToken(getAuthHandler().loadToken()).login();
-            client.getDispatcher().registerListener(new EventHandler(this));
-            AmadeusUtils.waitAction(3000, 20, new Action() {
-                @Override
-                public boolean done() {
-                    return isReady;
-                }
-            });
-            if (isReady) {
-                registerConfigurationHandlers();
-                registerCommandHandlers();
-                registerCommands();
-                loadAll();
-                log.info(translate("bot.ready"));
-            }
-            return isReady;
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
-        return false;
+        client.getDispatcher().registerListener(new EventHandler(this));
+        AmadeusUtils.waitAction(360000L, new Action() {
+            @Override
+            public synchronized boolean done() {
+                return isReady;
+            }
+        });
+        if (isReady) {
+            registerConfigurationHandlers();
+            registerCommandHandlers();
+            registerCommands();
+            loadAll();
+            log.info(translate("bot.ready"));
+        }
+        return isReady;
     }
 
     //
@@ -122,9 +144,7 @@ public abstract class AmadeusCore {
     }
 
     public void loadPerms() {
-        for (CommandHandler handler : listOfCommandHandlers())
-            if (handler.hasPermissionHandller())
-                handler.getPermissionHandler().loadPermissions();
+        getPermissionHandler().loadPermissions();
     }
 
     public void loadNames() {
@@ -148,6 +168,16 @@ public abstract class AmadeusCore {
         return result;
     }
 
+    public void setPermissionHandler(PermissionHandler handler) {
+        permissions = handler;
+    }
+
+    public PermissionHandler getPermissionHandler() {
+        if (permissions == null)
+            permissions = new DefaultPermissionHandler(this);
+        return permissions;
+    }
+
     public List<String> getPermissionsList() {
         ArrayList<String> result = new ArrayList<String>();
         result.add("*"); // Admin
@@ -162,7 +192,7 @@ public abstract class AmadeusCore {
     }
 
     //
-    // Ñonfigurations
+    // Configurations
     //
     public void addConfigurationHandler(ConfigurationHandler handler) {
         configs.put(handler.name, handler);
@@ -226,7 +256,7 @@ public abstract class AmadeusCore {
     //
     public AuthHandler getAuthHandler() {
         if (authHandler == null)
-            authHandler = new DefaultAuthHandler(this);
+            authHandler = new DefaultUserHomeAuthHandler(this);
         return authHandler;
     }
 

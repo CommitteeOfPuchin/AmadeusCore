@@ -12,13 +12,13 @@ public class CommandStatus extends BaseCommand {
 
     @Override
     public void execute(IUser sender, IMessage source, String args) throws Exception {
+        EmbedBuilder builder = core.info.toEmbedBuilder();
         StringBuilder answer = new StringBuilder();
-        answer.append(core.translate("status.botinfo") + "\n\n");
-        answer.append(core.translate("status.discord") + "\n");
         answer.append(core.translate("status.guilds", core.getClient().getGuilds().size()) + "\n");
         answer.append(core.translate("status.users", core.getClient().getUsers().size()) + "\n");
-        answer.append(core.translate("status.channels", core.getClient().getChannels().size()) + "\n\n");
-        answer.append(core.translate("status.bot") + "\n");
+        answer.append(core.translate("status.channels", core.getClient().getChannels().size()));
+        builder.appendField(core.translate("status.discord"), answer.toString(), true);
+        answer.delete(0, answer.length());
         answer.append(core.translate("status.handlers", core.listOfCommandHandlers().size()) + "\n");
         answer.append(core.translate("status.commands", core.getCommandCount()) + "\n");
         answer.append(core.translate("status.langs", core.getLangHandler().getLangs().size()) + "\n");
@@ -28,17 +28,11 @@ public class CommandStatus extends BaseCommand {
         String per = String.format("%.2f", curr * 100F / max) + "%";
         max /= 8388608;
         curr /= 8388608;
-        answer.append(core.translate("status.memory", curr, max, per) + "\n");
-        answer(source, "",
-                new EmbedBuilder().withThumbnail(core.getClient().getOurUser().getAvatarURL().replace("webp", "png"))
-                        .withColor(0x00FF00).appendDesc(answer.toString())
-                        .withFooterIcon(
-                                core.getClient().getUserByID(core.getDevId()).getAvatarURL().replace("webp", "png"))
-                        .withAuthorName("AmadeusCore > " + core.getName())
-                        .withFooterText(
-                                core.translate("status.owner",
-                                        "@" + core.getClient().getUserByID(core.getDevId()).getName() + "#"
-                                                + core.getClient().getUserByID(core.getDevId()).getDiscriminator()))
-                        .build());
+        builder.appendField(core.translate("status.memory"), core.translate("status.memory.value", curr, max, per),
+                true);
+        builder.appendField(core.translate("status.bot"), answer.toString(), true);
+        if (!core.hideInvite && core.info.hasInvite())
+            builder.appendField(core.translate("status.invite"), core.info.getInvite(), true);
+        answer(source, "", builder.withColor(0x00FF00).build());
     }
 }

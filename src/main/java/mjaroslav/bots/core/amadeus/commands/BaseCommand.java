@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import mjaroslav.bots.core.amadeus.AmadeusCore;
+import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
@@ -23,16 +24,42 @@ public abstract class BaseCommand {
 
     public abstract void execute(IUser sender, IMessage source, String args) throws Exception;
 
+    public boolean isForce(String args) {
+        try {
+            return hasArg("all", "force", AmadeusUtils.parseArgsToArray(args));
+        } catch (Exception e) {
+        }
+        try {
+            return hasArg("all", "force", AmadeusUtils.parseArgsToMap(args));
+        } catch (Exception e) {
+        }
+        return false;
+    }
+
     public boolean isYes(String arg) {
         for (String checkArg : handler.getNameHandler().getArgNames("all", "true"))
             if (arg.toLowerCase().equals(checkArg))
                 return true;
         return false;
     }
-    
+
     public boolean isAll(String arg) {
         for (String checkArg : handler.getNameHandler().getArgNames("all", "all"))
             if (arg.toLowerCase().equals(checkArg))
+                return true;
+        return false;
+    }
+
+    public boolean hasArg(String command, String arg, List<String> argsParsed) {
+        for (String checkArg : handler.getNameHandler().getArgNames(command, arg))
+            if (argsParsed.contains(checkArg))
+                return true;
+        return false;
+    }
+
+    public boolean hasArg(String command, String arg, HashMap<String, String> argsParsed) {
+        for (String checkArg : handler.getNameHandler().getArgNames(command, arg))
+            if (argsParsed.containsKey(checkArg))
                 return true;
         return false;
     }

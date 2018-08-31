@@ -17,11 +17,17 @@ public abstract class BaseCommandDialogYesNo extends BaseCommand {
 
     @Override
     public final void execute(IUser sender, IMessage source, String args) throws Exception {
-        List<String> argsParsed = AmadeusUtils.parseArgsToArray(args);
         if (!cache.containsKey(source.getAuthor().getLongID())) {
-            cache.put(source.getAuthor().getLongID(), args);
-            answerWarn(source, core.translate("answer.dialogyesno"));
-        } else if (isYes(argsParsed.get(0))) {
+            if (isForce(args))
+                executeYes(sender, source, args);
+            else {
+                cache.put(source.getAuthor().getLongID(), args);
+                answerWarn(source, core.translate("answer.dialogyesno"));
+            }
+            return;
+        }
+        List<String> argsParsed = AmadeusUtils.parseArgsToArray(args);
+        if (isYes(argsParsed.get(0))) {
             if (cache.containsKey(source.getAuthor().getLongID())) {
                 String temp = cache.get(source.getAuthor().getLongID());
                 cache.remove(source.getAuthor().getLongID());

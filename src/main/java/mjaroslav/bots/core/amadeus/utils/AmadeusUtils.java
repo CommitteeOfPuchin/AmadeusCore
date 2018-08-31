@@ -130,24 +130,26 @@ public class AmadeusUtils {
         return removePreifx(text, core, command.handler.getNameHandler().getNames(command.name), checkSpace);
     }
 
+    public static void waitAction(long checkTime, Action action) {
+        long time = System.currentTimeMillis() + checkTime;
+        while (!action.done() && System.currentTimeMillis() < time) {
+        }
+    }
+
+    public static void waitAction(Action action) {
+        while (!action.done()) {
+        }
+    }
+
+    public static interface Action {
+        public boolean done();
+    }
+
     public static void sleep(long millis) {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void waitAction(long checkCooldown, int checkCount, Action action) {
-        int checkPos = 0;
-        while (!action.done() && ((checkCount < 0) || (checkPos < checkCount))) {
-            sleep(checkCooldown);
-            if (checkCount > 0)
-                checkPos++;
-        }
-    }
-
-    public static interface Action {
-        public boolean done();
     }
 }

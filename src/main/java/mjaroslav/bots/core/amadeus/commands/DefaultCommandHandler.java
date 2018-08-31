@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import mjaroslav.bots.core.amadeus.AmadeusCore;
-import mjaroslav.bots.core.amadeus.permissions.DefaultPermissionHandler;
-import mjaroslav.bots.core.amadeus.permissions.PermissionHandler;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
@@ -14,12 +12,10 @@ public class DefaultCommandHandler extends CommandHandler {
     private final HashMap<String, BaseCommand> commands = new HashMap<String, BaseCommand>();
 
     private final CommandNameHandler nameHandler = new DefaultCommandNameHandler(core, this);
-    private final PermissionHandler permHandler = new DefaultPermissionHandler(core, this);
 
     public DefaultCommandHandler(AmadeusCore core, String name) {
         super(core, name);
         getNameHandler().loadNames();
-        getPermissionHandler().loadPermissions();
     }
 
     @Override
@@ -50,8 +46,7 @@ public class DefaultCommandHandler extends CommandHandler {
             if (command != null) {
                 String args = AmadeusUtils.removePreifx(commandString, core, command, false);
                 try {
-                    if (!hasPermissionHandller() || getPermissionHandler().canUseCommand(event.getAuthor(),
-                            event.getMessage(), command, null))
+                    if (core.getPermissionHandler().canUseCommand(event.getAuthor(), event.getMessage(), command, null))
                         command.execute(event.getAuthor(), event.getMessage(), args);
                     else {
                         core.sendError(
@@ -94,17 +89,7 @@ public class DefaultCommandHandler extends CommandHandler {
     }
 
     @Override
-    public PermissionHandler getPermissionHandler() {
-        return permHandler;
-    }
-
-    @Override
     public boolean hasNameHandller() {
-        return true;
-    }
-
-    @Override
-    public boolean hasPermissionHandller() {
         return true;
     }
 }

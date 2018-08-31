@@ -11,7 +11,7 @@ import mjaroslav.bots.core.amadeus.utils.JSONReader;
 
 public class DefaultLangHandler extends LangHandler {
     private static final HashMap<String, JSONReader<HashMap<String, String>>> langs = new HashMap<String, JSONReader<HashMap<String, String>>>();
-    public static final String defaultLang = "english";
+
     private static String currentLang;
 
     public DefaultLangHandler(AmadeusCore core) {

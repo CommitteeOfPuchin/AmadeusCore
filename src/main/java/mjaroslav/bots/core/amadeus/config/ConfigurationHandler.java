@@ -14,9 +14,9 @@ public abstract class ConfigurationHandler {
     }
 
     public abstract void readConfig() throws Exception;
-    
+
     public abstract void afterLoad() throws Exception;
-    
+
     public abstract void writeConfig() throws Exception;
 
     public File getFile() {
@@ -28,6 +28,6 @@ public abstract class ConfigurationHandler {
     }
 
     public File getFolder() {
-        return core.getFolder().toPath().resolve("configurations").toFile();
+        return core.info.getFolder().toPath().resolve("configurations").toFile();
     }
 }
