@@ -18,10 +18,15 @@ import mjaroslav.bots.core.amadeus.commands.CommandHandler;
 import mjaroslav.bots.core.amadeus.commands.DefaultCommandHandler;
 import mjaroslav.bots.core.amadeus.config.ConfigurationHandler;
 import mjaroslav.bots.core.amadeus.config.DefaultConfiguration;
+import mjaroslav.bots.core.amadeus.database.DatabaseHandler;
+import mjaroslav.bots.core.amadeus.database.DefaultDatabaseHandler;
 import mjaroslav.bots.core.amadeus.lang.DefaultLangHandler;
 import mjaroslav.bots.core.amadeus.lang.LangHandler;
 import mjaroslav.bots.core.amadeus.permissions.DefaultPermissionHandler;
+import mjaroslav.bots.core.amadeus.permissions.DefaultSQLitePermissionHandler;
 import mjaroslav.bots.core.amadeus.permissions.PermissionHandler;
+import mjaroslav.bots.core.amadeus.terminal.DefaultTerminalCommandHandler;
+import mjaroslav.bots.core.amadeus.terminal.TerminalCommandHandler;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils.Action;
 import mjaroslav.bots.core.amadeus.utils.JSONUtils;
@@ -41,8 +46,10 @@ public abstract class AmadeusCore {
     private AuthHandler authHandler;
     private final HashMap<String, CommandHandler> commands = new HashMap<String, CommandHandler>();
     private final HashMap<String, ConfigurationHandler> configs = new HashMap<String, ConfigurationHandler>();
+    private final HashMap<String, DatabaseHandler> databases = new HashMap<String, DatabaseHandler>();
     private LangHandler langs;
     private PermissionHandler permissions;
+    private TerminalCommandHandler terminal;
 
     //
     // Other
@@ -106,6 +113,8 @@ public abstract class AmadeusCore {
             registerCommandHandlers();
             registerCommands();
             loadAll();
+            getTerminalHandler().registerCommands();
+            getTerminalHandler().start();
             log.info(translate("bot.ready"));
         }
         return isReady;
@@ -120,6 +129,7 @@ public abstract class AmadeusCore {
         loadPerms();
         loadConfigs();
         loadOthers();
+        loadDatabases();
     }
 
     public void loadLangs() {
@@ -141,6 +151,11 @@ public abstract class AmadeusCore {
     }
 
     public void loadOthers() {
+    }
+
+    public void loadDatabases() {
+        for (DatabaseHandler handler : listOfDatabaseHandlers())
+            handler.init();
     }
 
     public void loadPerms() {
@@ -178,6 +193,26 @@ public abstract class AmadeusCore {
         return permissions;
     }
 
+    public void setTerminalHandler(TerminalCommandHandler newTerminal) {
+        if (terminal != null) {
+            terminal.interrupt();
+            AmadeusUtils.waitAction(10000L, new Action() {
+                @Override
+                public synchronized boolean done() {
+                    return terminal.isInterrupted();
+                }
+            });
+        }
+        terminal = newTerminal;
+        terminal.start();
+    }
+
+    public TerminalCommandHandler getTerminalHandler() {
+        if (terminal == null)
+            terminal = new DefaultTerminalCommandHandler(this);
+        return terminal;
+    }
+
     public List<String> getPermissionsList() {
         ArrayList<String> result = new ArrayList<String>();
         result.add("*"); // Admin
@@ -204,6 +239,28 @@ public abstract class AmadeusCore {
 
     public List<ConfigurationHandler> listOfConfigurationHandlers() {
         return new ArrayList<ConfigurationHandler>(configs.values());
+    }
+
+    //
+    // Databases
+    //
+    public void addDatabaseHandler(DatabaseHandler handler) {
+        if (databases.containsKey(handler.name))
+            databases.get(handler.name).close();
+        databases.put(handler.name, handler);
+    }
+
+    public DatabaseHandler getDatabaseHandler(String name) {
+        DatabaseHandler handler = databases.get(name);
+        if (handler == null) {
+            handler = new DefaultDatabaseHandler(name, this);
+            handler.init();
+        }
+        return handler;
+    }
+
+    public List<DatabaseHandler> listOfDatabaseHandlers() {
+        return new ArrayList<DatabaseHandler>(databases.values());
     }
 
     public void registerConfigurationHandlers() {
@@ -359,9 +416,12 @@ public abstract class AmadeusCore {
         isReady = false;
         if (client != null)
             client.logout();
+        for (DatabaseHandler handler : listOfDatabaseHandlers())
+            handler.close();
     }
 
     public void onReady() {
+        new DefaultSQLitePermissionHandler(this).loadPermissions();
     }
 
     public static class EventHandler {

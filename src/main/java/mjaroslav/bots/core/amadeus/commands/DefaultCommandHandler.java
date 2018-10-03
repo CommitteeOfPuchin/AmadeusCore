@@ -25,6 +25,7 @@ public class DefaultCommandHandler extends CommandHandler {
         registerCommand(new CommandReload(core, this));
         registerCommand(new CommandExit(core, this));
         registerCommand(new CommandPermsInfo(core, this));
+        registerCommand(new CommandBotInfo(core, this));
     }
 
     @Override

@@ -71,6 +71,15 @@ public abstract class BaseCommand {
         return false;
     }
 
+    public boolean hasArgAt(String arg, int pos, List<String> argsParsed) {
+        if(pos >= argsParsed.size())
+            return false;
+        for (String checkArg : handler.getNameHandler().getArgNames(name, arg))
+            if (argsParsed.get(pos).equals(checkArg))
+                return true;
+        return false;
+    }
+    
     public boolean hasArg(String arg, HashMap<String, String> argsParsed) {
         for (String checkArg : handler.getNameHandler().getArgNames(name, arg))
             if (argsParsed.containsKey(checkArg))
