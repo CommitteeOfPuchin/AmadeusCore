@@ -2,7 +2,6 @@ package mjaroslav.bots.core.amadeus.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.commands.BaseCommand;
 
@@ -132,13 +131,11 @@ public class AmadeusUtils {
 
     public static void waitAction(long checkTime, Action action) {
         long time = System.currentTimeMillis() + checkTime;
-        while (!action.done() && System.currentTimeMillis() < time) {
-        }
+        while (!action.done() && System.currentTimeMillis() < time) {}
     }
 
     public static void waitAction(Action action) {
-        while (!action.done()) {
-        }
+        while (!action.done()) {}
     }
 
     public static interface Action {

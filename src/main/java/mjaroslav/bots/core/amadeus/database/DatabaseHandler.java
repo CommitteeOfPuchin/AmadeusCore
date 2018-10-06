@@ -4,7 +4,6 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 
 public abstract class DatabaseHandler {
@@ -46,7 +45,7 @@ public abstract class DatabaseHandler {
     public String getExt() {
         return "db";
     }
-    
+
     public final boolean isReady() {
         return ready;
     }

@@ -5,13 +5,12 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 
 public class DefaultDatabaseHandler extends DatabaseHandler {
     private Connection connection;
     private Statement statement;
-    
+
     public DefaultDatabaseHandler(String name, AmadeusCore core) {
         super(name, core);
     }
@@ -22,8 +21,7 @@ public class DefaultDatabaseHandler extends DatabaseHandler {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:" + getFile().getAbsolutePath());
             return true;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -55,7 +53,7 @@ public class DefaultDatabaseHandler extends DatabaseHandler {
 
     @Override
     public Statement getStatement() {
-        if(statement == null)
+        if (statement == null)
             try {
                 statement = connection.createStatement();
             } catch (SQLException e) {

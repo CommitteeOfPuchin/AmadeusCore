@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.utils.JSONReader;
 

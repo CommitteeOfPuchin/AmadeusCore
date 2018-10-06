@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
@@ -27,12 +26,10 @@ public abstract class BaseCommand {
     public boolean isForce(String args) {
         try {
             return hasArg("all", "force", AmadeusUtils.parseArgsToArray(args));
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
         try {
             return hasArg("all", "force", AmadeusUtils.parseArgsToMap(args));
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
         return false;
     }
 
@@ -72,14 +69,14 @@ public abstract class BaseCommand {
     }
 
     public boolean hasArgAt(String arg, int pos, List<String> argsParsed) {
-        if(pos >= argsParsed.size())
+        if (pos >= argsParsed.size())
             return false;
         for (String checkArg : handler.getNameHandler().getArgNames(name, arg))
             if (argsParsed.get(pos).equals(checkArg))
                 return true;
         return false;
     }
-    
+
     public boolean hasArg(String arg, HashMap<String, String> argsParsed) {
         for (String checkArg : handler.getNameHandler().getArgNames(name, arg))
             if (argsParsed.containsKey(checkArg))

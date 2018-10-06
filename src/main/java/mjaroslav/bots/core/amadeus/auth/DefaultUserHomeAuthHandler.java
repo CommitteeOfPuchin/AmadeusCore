@@ -3,9 +3,7 @@ package mjaroslav.bots.core.amadeus.auth;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
-
 import com.google.gson.annotations.SerializedName;
-
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils.Action;

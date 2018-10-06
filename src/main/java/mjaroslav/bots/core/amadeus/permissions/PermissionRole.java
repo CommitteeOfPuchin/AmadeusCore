@@ -10,24 +10,23 @@ public class PermissionRole {
     public String parent = "";
     @SerializedName("permissions")
     public List<String> permissions;
-    
-    public PermissionRole() {
-    }
-    
+
+    public PermissionRole() {}
+
     public PermissionRole(String name) {
         this.name = name;
     }
-    
+
     public PermissionRole(String name, String parent) {
         this.name = name;
         this.parent = parent;
     }
-    
+
     public PermissionRole(String name, List<String> permissions) {
         this.name = name;
         this.permissions = permissions;
     }
-    
+
     public PermissionRole(String name, String parent, List<String> permissions) {
         this.name = name;
         this.parent = parent;

@@ -1,7 +1,6 @@
 package mjaroslav.bots.core.amadeus.commands;
 
 import java.util.ArrayList;
-
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 import sx.blah.discord.handle.obj.IEmoji;

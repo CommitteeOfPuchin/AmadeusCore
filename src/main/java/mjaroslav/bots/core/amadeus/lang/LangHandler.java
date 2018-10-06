@@ -2,7 +2,6 @@ package mjaroslav.bots.core.amadeus.lang;
 
 import java.io.File;
 import java.util.List;
-
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 
 public abstract class LangHandler {

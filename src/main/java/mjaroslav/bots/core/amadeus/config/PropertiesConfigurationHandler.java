@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
-
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 
 public abstract class PropertiesConfigurationHandler extends ConfigurationHandler {
@@ -250,8 +249,7 @@ public abstract class PropertiesConfigurationHandler extends ConfigurationHandle
     public static class ConfigProperty {
         public String value;
 
-        public ConfigProperty() {
-        }
+        public ConfigProperty() {}
 
         public ConfigProperty(String value) {
             this.value = value;

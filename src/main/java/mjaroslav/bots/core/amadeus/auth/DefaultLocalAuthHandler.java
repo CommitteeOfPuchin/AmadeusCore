@@ -2,10 +2,8 @@ package mjaroslav.bots.core.amadeus.auth;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.utils.JSONUtils;
 

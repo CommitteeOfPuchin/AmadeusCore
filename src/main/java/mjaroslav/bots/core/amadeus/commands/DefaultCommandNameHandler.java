@@ -1,7 +1,6 @@
 package mjaroslav.bots.core.amadeus.commands;
 
 import java.util.*;
-
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.utils.JSONReader;
 

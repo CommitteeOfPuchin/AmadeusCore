@@ -3,7 +3,6 @@ package mjaroslav.bots.core.amadeus.utils;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

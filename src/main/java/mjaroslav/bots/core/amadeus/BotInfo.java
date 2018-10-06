@@ -1,9 +1,7 @@
 package mjaroslav.bots.core.amadeus;
 
 import java.io.File;
-
 import com.google.gson.annotations.SerializedName;
-
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
@@ -32,8 +30,7 @@ public class BotInfo {
     @SerializedName("invite")
     private String invite;
 
-    public BotInfo() {
-    }
+    public BotInfo() {}
 
     public BotInfo(AmadeusCore core, String name, long[] devIds, String folder) {
         this.core = core;

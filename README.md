@@ -1,2 +1,2 @@
 # AmadeusCore
-Ядро для моих ботов
+Java фреймворк для ботов discord.

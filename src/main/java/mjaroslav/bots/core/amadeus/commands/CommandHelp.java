@@ -3,7 +3,6 @@ package mjaroslav.bots.core.amadeus.commands;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 import sx.blah.discord.handle.obj.IMessage;
@@ -70,12 +69,12 @@ public class CommandHelp extends BaseCommand {
     public String getHelpDesc(String args) {
         String result = super.getHelpDesc(args);
         switch (args) {
-        case "command":
-            result = core.translate("help." + name + ".command");
-            break;
-        case "handler":
-            result = core.translate("help." + name + ".handler");
-            break;
+            case "command":
+                result = core.translate("help." + name + ".command");
+                break;
+            case "handler":
+                result = core.translate("help." + name + ".handler");
+                break;
         }
         return result;
     }

@@ -1,7 +1,6 @@
 package mjaroslav.bots.core.amadeus.config;
 
 import java.io.File;
-
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 
 public abstract class ConfigurationHandler {

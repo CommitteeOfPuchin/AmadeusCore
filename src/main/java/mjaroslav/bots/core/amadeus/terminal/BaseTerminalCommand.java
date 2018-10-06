@@ -2,7 +2,6 @@ package mjaroslav.bots.core.amadeus.terminal;
 
 import java.util.HashMap;
 import java.util.List;
-
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 
@@ -22,12 +21,10 @@ public abstract class BaseTerminalCommand {
     public boolean isForce(String args) {
         try {
             return hasArg("force", AmadeusUtils.parseArgsToArray(args));
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
         try {
             return hasArg("force", AmadeusUtils.parseArgsToMap(args));
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
         return false;
     }
 
@@ -65,7 +62,7 @@ public abstract class BaseTerminalCommand {
             return argsParsed.get(index + 1);
         return null;
     }
-    
+
     public void answer(Object answer) {
         handler.answer(answer);
     }

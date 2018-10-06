@@ -24,9 +24,9 @@ public abstract class PermissionHandler {
     public abstract List<String> getPermsByRole(long roleId);
 
     public abstract List<String> getPermsByGuild(long guildId);
-    
+
     public abstract List<String> getPermsByPerms(Permissions perm);
-    
+
     public abstract List<String> getAllPermissions(IUser sender, IMessage source);
 
     public abstract boolean hasPermission(IUser sender, IMessage source, String permission);

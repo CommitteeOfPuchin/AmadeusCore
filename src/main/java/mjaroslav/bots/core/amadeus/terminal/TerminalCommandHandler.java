@@ -1,7 +1,6 @@
 package mjaroslav.bots.core.amadeus.terminal;
 
 import java.util.List;
-
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 
 public abstract class TerminalCommandHandler extends Thread {
@@ -23,6 +22,6 @@ public abstract class TerminalCommandHandler extends Thread {
     public abstract void registerCommand(BaseTerminalCommand command);
 
     public abstract String readLine();
-    
+
     public abstract void answer(Object answer);
 }
