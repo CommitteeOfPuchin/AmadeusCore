@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
-
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 
@@ -55,6 +54,7 @@ public class DefaultTerminalCommandHandler extends TerminalCommandHandler {
     @Override
     public void registerCommands() {
         registerCommand(new TerminalCommandStop(core, this));
+        registerCommand(new TerminalCommandChat(core, this));
     }
 
     @Override

@@ -21,6 +21,7 @@ public class CommandStatus extends BaseCommand {
         answer.delete(0, answer.length());
         answer.append(core.translate("status.handlers", core.listOfCommandHandlers().size()) + "\n");
         answer.append(core.translate("status.commands", core.getCommandCount()) + "\n");
+        answer.append(core.translate("status.databases", core.listOfDatabaseHandlers().size()) + "\n");
         answer.append(core.translate("status.langs", core.getLangHandler().getLangs().size()) + "\n");
         answer.append(core.translate("status.configs", core.listOfConfigurationHandlers().size()) + "\n");
         double max = Runtime.getRuntime().maxMemory();

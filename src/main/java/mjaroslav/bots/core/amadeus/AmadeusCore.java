@@ -6,11 +6,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import mjaroslav.bots.core.amadeus.auth.AuthHandler;
 import mjaroslav.bots.core.amadeus.auth.DefaultUserHomeAuthHandler;
 import mjaroslav.bots.core.amadeus.commands.BaseCommand;
@@ -23,7 +21,6 @@ import mjaroslav.bots.core.amadeus.database.DefaultDatabaseHandler;
 import mjaroslav.bots.core.amadeus.lang.DefaultLangHandler;
 import mjaroslav.bots.core.amadeus.lang.LangHandler;
 import mjaroslav.bots.core.amadeus.permissions.DefaultPermissionHandler;
-import mjaroslav.bots.core.amadeus.permissions.DefaultSQLitePermissionHandler;
 import mjaroslav.bots.core.amadeus.permissions.PermissionHandler;
 import mjaroslav.bots.core.amadeus.terminal.DefaultTerminalCommandHandler;
 import mjaroslav.bots.core.amadeus.terminal.TerminalCommandHandler;
@@ -150,8 +147,7 @@ public abstract class AmadeusCore {
             }
     }
 
-    public void loadOthers() {
-    }
+    public void loadOthers() {}
 
     public void loadDatabases() {
         for (DatabaseHandler handler : listOfDatabaseHandlers())
@@ -255,6 +251,7 @@ public abstract class AmadeusCore {
         if (handler == null) {
             handler = new DefaultDatabaseHandler(name, this);
             handler.init();
+            databases.put(name, handler);
         }
         return handler;
     }
@@ -421,7 +418,7 @@ public abstract class AmadeusCore {
     }
 
     public void onReady() {
-        new DefaultSQLitePermissionHandler(this).loadPermissions();
+        new DefaultPermissionHandler(this).loadPermissions();
     }
 
     public static class EventHandler {
@@ -441,11 +438,15 @@ public abstract class AmadeusCore {
         public void onMessage(MessageReceivedEvent event) {
             String from = "";
             if (event.getMessage().getChannel() != null)
-                from = "[" + new String(event.getChannel().getGuild().getName().getBytes(), StandardCharsets.UTF_8)
-                        + ":" + new String(event.getChannel().getName().getBytes(), StandardCharsets.UTF_8) + "] "
-                        + event.getAuthor().getDisplayName(event.getChannel().getGuild()) + ": ";
+                from = "Message\nServer: "
+                        + new String(event.getChannel().getGuild().getName().getBytes(), StandardCharsets.UTF_8) + " ("
+                        + event.getChannel().getGuild().getLongID() + ")\n" + "Channel: "
+                        + new String(event.getChannel().getName().getBytes(), StandardCharsets.UTF_8) + " ("
+                        + event.getChannel().getLongID() + ")\n" + "User: "
+                        + event.getAuthor().getDisplayName(event.getChannel().getGuild()) + " ("
+                        + event.getAuthor().getLongID() + ")\n";
             else
-                from = "[PM] " + event.getAuthor() + ": ";
+                from = "Private: " + event.getAuthor() + " (" + event.getAuthor().getLongID() + ")\n";
             core.log.info(from + event.getMessage().getContent());
             for (CommandHandler commandHandler : core.listOfCommandHandlers())
                 if (commandHandler.executeCommand(event))
