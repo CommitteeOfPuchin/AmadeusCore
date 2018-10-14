@@ -1,27 +1,18 @@
 package mjaroslav.bots.core.amadeus.lang;
 
-import java.io.File;
-import java.util.List;
+import java.util.HashMap;
 import mjaroslav.bots.core.amadeus.AmadeusCore;
+import mjaroslav.bots.core.amadeus.database.AbstractDatabase;
 
-public abstract class LangHandler {
-    public static final String defaultLang = "english";
-
+public class LangHandler {
     public final AmadeusCore core;
-
+    public static AbstractDatabase handler;
+    public static final I18n GLOBAL =  new I18n();
+    public static final HashMap<Long, I18n> USERS = new HashMap<>();
+    public static final HashMap<Long, I18n> GUILDS = new HashMap<>();
+    
     public LangHandler(AmadeusCore core) {
         this.core = core;
-    }
-
-    public abstract String translate(String key, Object... objects);
-
-    public abstract void loadLangs() throws Exception;
-
-    public abstract void setLang(String lang) throws Exception;
-
-    public abstract List<String> getLangs();
-
-    public File getFolder() {
-        return core.info.getFolder().toPath().resolve("languages").toFile();
+        handler = core.getDatabaseHandler("default");
     }
 }

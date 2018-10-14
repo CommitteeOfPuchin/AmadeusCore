@@ -7,12 +7,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 
-public class DefaultDatabaseHandler extends DatabaseHandler {
+public class Database extends AbstractDatabase {
     private Connection connection;
     private Statement statement;
 
-    public DefaultDatabaseHandler(String name, AmadeusCore core) {
-        super(name, core);
+    public Database(String name) {
+        super(name);
     }
 
     @Override
@@ -65,7 +65,9 @@ public class DefaultDatabaseHandler extends DatabaseHandler {
     @Override
     public void close() {
         try {
+            if(statement != null)
             statement.close();
+            if(connection != null)
             connection.close();
         } catch (SQLException e) {
             e.printStackTrace();

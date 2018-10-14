@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.commands.BaseCommand;
-import mjaroslav.bots.core.amadeus.database.DatabaseHandler;
+import mjaroslav.bots.core.amadeus.database.AbstractDatabase;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 import mjaroslav.bots.core.amadeus.utils.JSONReader;
 import sx.blah.discord.handle.obj.IMessage;
@@ -19,7 +19,7 @@ import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
 
 public class DefaultPermissionHandler extends PermissionHandler {
-    private DatabaseHandler handler = core.getDatabaseHandler("default");
+    private AbstractDatabase handler = core.getDatabaseHandler("default");
     public final JSONReader<PermissionRole[]> readerRoles = new JSONReader<>(new PermissionRole[] {}, getRoleFile(),
             true);
     private final HashMap<String, String> pperms = new HashMap<String, String>();

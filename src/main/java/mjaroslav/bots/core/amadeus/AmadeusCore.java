@@ -16,8 +16,8 @@ import mjaroslav.bots.core.amadeus.commands.CommandHandler;
 import mjaroslav.bots.core.amadeus.commands.DefaultCommandHandler;
 import mjaroslav.bots.core.amadeus.config.ConfigurationHandler;
 import mjaroslav.bots.core.amadeus.config.DefaultConfiguration;
-import mjaroslav.bots.core.amadeus.database.DatabaseHandler;
-import mjaroslav.bots.core.amadeus.database.DefaultDatabaseHandler;
+import mjaroslav.bots.core.amadeus.database.AbstractDatabase;
+import mjaroslav.bots.core.amadeus.database.Database;
 import mjaroslav.bots.core.amadeus.lang.DefaultLangHandler;
 import mjaroslav.bots.core.amadeus.lang.LangHandler;
 import mjaroslav.bots.core.amadeus.permissions.DefaultPermissionHandler;
@@ -43,7 +43,7 @@ public abstract class AmadeusCore {
     private AuthHandler authHandler;
     private final HashMap<String, CommandHandler> commands = new HashMap<String, CommandHandler>();
     private final HashMap<String, ConfigurationHandler> configs = new HashMap<String, ConfigurationHandler>();
-    private final HashMap<String, DatabaseHandler> databases = new HashMap<String, DatabaseHandler>();
+    private final HashMap<String, AbstractDatabase> databases = new HashMap<String, AbstractDatabase>();
     private LangHandler langs;
     private PermissionHandler permissions;
     private TerminalCommandHandler terminal;
@@ -150,7 +150,7 @@ public abstract class AmadeusCore {
     public void loadOthers() {}
 
     public void loadDatabases() {
-        for (DatabaseHandler handler : listOfDatabaseHandlers())
+        for (AbstractDatabase handler : listOfDatabaseHandlers())
             handler.init();
     }
 
@@ -240,24 +240,24 @@ public abstract class AmadeusCore {
     //
     // Databases
     //
-    public void addDatabaseHandler(DatabaseHandler handler) {
+    public void addDatabaseHandler(AbstractDatabase handler) {
         if (databases.containsKey(handler.name))
             databases.get(handler.name).close();
         databases.put(handler.name, handler);
     }
 
-    public DatabaseHandler getDatabaseHandler(String name) {
-        DatabaseHandler handler = databases.get(name);
+    public AbstractDatabase getDatabaseHandler(String name) {
+        AbstractDatabase handler = databases.get(name);
         if (handler == null) {
-            handler = new DefaultDatabaseHandler(name, this);
+            handler = new Database(name, this);
             handler.init();
             databases.put(name, handler);
         }
         return handler;
     }
 
-    public List<DatabaseHandler> listOfDatabaseHandlers() {
-        return new ArrayList<DatabaseHandler>(databases.values());
+    public List<AbstractDatabase> listOfDatabaseHandlers() {
+        return new ArrayList<AbstractDatabase>(databases.values());
     }
 
     public void registerConfigurationHandlers() {
@@ -413,7 +413,7 @@ public abstract class AmadeusCore {
         isReady = false;
         if (client != null)
             client.logout();
-        for (DatabaseHandler handler : listOfDatabaseHandlers())
+        for (AbstractDatabase handler : listOfDatabaseHandlers())
             handler.close();
     }
 
