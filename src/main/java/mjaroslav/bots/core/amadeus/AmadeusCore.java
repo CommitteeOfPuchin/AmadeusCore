@@ -17,11 +17,11 @@ import mjaroslav.bots.core.amadeus.commands.DefaultCommandHandler;
 import mjaroslav.bots.core.amadeus.config.ConfigurationHandler;
 import mjaroslav.bots.core.amadeus.config.DefaultConfiguration;
 import mjaroslav.bots.core.amadeus.database.AbstractDatabase;
-import mjaroslav.bots.core.amadeus.database.Database;
+import mjaroslav.bots.core.amadeus.database.SQLiteDatabase;
 import mjaroslav.bots.core.amadeus.lang.DefaultLangHandler;
 import mjaroslav.bots.core.amadeus.lang.LangHandler;
 import mjaroslav.bots.core.amadeus.permissions.DefaultPermissionHandler;
-import mjaroslav.bots.core.amadeus.permissions.PermissionHandler;
+import mjaroslav.bots.core.amadeus.permissions.PPermissionHandler;
 import mjaroslav.bots.core.amadeus.terminal.DefaultTerminalCommandHandler;
 import mjaroslav.bots.core.amadeus.terminal.TerminalCommandHandler;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
@@ -45,7 +45,7 @@ public abstract class AmadeusCore {
     private final HashMap<String, ConfigurationHandler> configs = new HashMap<String, ConfigurationHandler>();
     private final HashMap<String, AbstractDatabase> databases = new HashMap<String, AbstractDatabase>();
     private LangHandler langs;
-    private PermissionHandler permissions;
+    private PPermissionHandler permissions;
     private TerminalCommandHandler terminal;
 
     //
@@ -179,11 +179,11 @@ public abstract class AmadeusCore {
         return result;
     }
 
-    public void setPermissionHandler(PermissionHandler handler) {
+    public void setPermissionHandler(PPermissionHandler handler) {
         permissions = handler;
     }
 
-    public PermissionHandler getPermissionHandler() {
+    public PPermissionHandler getPermissionHandler() {
         if (permissions == null)
             permissions = new DefaultPermissionHandler(this);
         return permissions;
@@ -249,7 +249,7 @@ public abstract class AmadeusCore {
     public AbstractDatabase getDatabaseHandler(String name) {
         AbstractDatabase handler = databases.get(name);
         if (handler == null) {
-            handler = new Database(name, this);
+            handler = new SQLiteDatabase(name, this);
             handler.init();
             databases.put(name, handler);
         }

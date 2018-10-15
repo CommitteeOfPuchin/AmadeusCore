@@ -1,11 +1,23 @@
 package mjaroslav.bots.core.amadeus.utils;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.apache.commons.io.FilenameUtils;
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.commands.BaseCommand;
 
 public class AmadeusUtils {
+    public static FilenameFilter getFilenameExtFilter(String ext) {
+        return new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return FilenameUtils.isExtension(name, ext);
+            }
+        };
+    }
+
     public static boolean stringIsNotEmpty(String input) {
         return input != null && input.length() > 0;
     }

@@ -5,14 +5,19 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import mjaroslav.bots.core.amadeus.AmadeusCore;
 
-public class Database extends AbstractDatabase {
+public class SQLiteDatabase extends AbstractDatabase {
     private Connection connection;
     private Statement statement;
 
-    public Database(String name) {
+    public SQLiteDatabase(String name) {
         super(name);
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                close();
+            }
+        });
     }
 
     @Override
@@ -65,10 +70,10 @@ public class Database extends AbstractDatabase {
     @Override
     public void close() {
         try {
-            if(statement != null)
-            statement.close();
-            if(connection != null)
-            connection.close();
+            if (statement != null)
+                statement.close();
+            if (connection != null)
+                connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

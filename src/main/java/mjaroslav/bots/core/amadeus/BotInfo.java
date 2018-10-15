@@ -2,6 +2,7 @@ package mjaroslav.bots.core.amadeus;
 
 import java.io.File;
 import com.google.gson.annotations.SerializedName;
+import mjaroslav.bots.core.amadeus.lib.References;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
@@ -109,8 +110,8 @@ public class BotInfo {
 
     public EmbedBuilder toEmbedBuilder() {
         EmbedBuilder builder = new EmbedBuilder();
-        builder.withAuthorName(AmadeusInfo.NAME + " > " + getName());
-        builder.appendField(core.translate("core.amadeusversion"), AmadeusInfo.VERSION, true);
+        builder.withAuthorName(References.LIB_NAME + " > " + getName());
+        builder.appendField(core.translate("core.amadeusversion"), References.LIB_VERSION, true);
         if (hasVersion())
             builder.appendField(core.translate("core.botversion"), getVersion(), true);
         if (hasDescription())

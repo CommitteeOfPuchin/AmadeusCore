@@ -18,7 +18,7 @@ import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
 
-public class DefaultPermissionHandler extends PermissionHandler {
+public class DefaultPermissionHandler extends PPermissionHandler {
     private AbstractDatabase handler = core.getDatabaseHandler("default");
     public final JSONReader<PermissionRole[]> readerRoles = new JSONReader<>(new PermissionRole[] {}, getRoleFile(),
             true);

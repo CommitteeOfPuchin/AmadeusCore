@@ -5,8 +5,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import mjaroslav.bots.core.amadeus.lib.References;
 
 public class JSONUtils {
+    public static final FilenameFilter JSONEXTFILTER = AmadeusUtils.getFilenameExtFilter(References.EXT_JSON);
     public static final Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
     public static final Gson gson = new Gson();
 
