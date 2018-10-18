@@ -1,14 +1,22 @@
 package mjaroslav.bots.core.amadeus.utils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import mjaroslav.bots.core.amadeus.lib.References;
+import mjaroslav.bots.core.amadeus.lib.FileHelper;
 
 public class JSONUtils {
-    public static final FilenameFilter JSONEXTFILTER = AmadeusUtils.getFilenameExtFilter(References.EXT_JSON);
+    public static final FilenameFilter JSONEXTFILTER = AmadeusUtils.getFilenameExtFilter(FileHelper.EXT_JSON);
     public static final Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
     public static final Gson gson = new Gson();
 

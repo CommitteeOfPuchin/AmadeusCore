@@ -2,6 +2,7 @@ package mjaroslav.bots.core.amadeus.utils;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.commons.io.FilenameUtils;
@@ -9,6 +10,53 @@ import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.commands.BaseCommand;
 
 public class AmadeusUtils {
+    public static boolean existsOrCreateFolder(File folder) {
+        return (folder.exists() && folder.isDirectory()) || folder.mkdirs();
+    }
+
+    public static boolean existsOrCreateFile(File file) {
+        try {
+            return (file.exists() && file.isFile()) || file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean existsOrCreateFolder(File folder, Action onCreate, Action onExists) {
+        if (folder.exists() && folder.isDirectory()) {
+            if (onExists != null)
+                return onExists.done();
+            return true;
+        } else {
+            if (folder.mkdirs()) {
+                if (onCreate != null)
+                    return onCreate.done();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean existsOrCreateFile(File file, Action onCreate, Action onExists) {
+        if (file.exists() && file.isFile()) {
+            if (onExists != null)
+                return onExists.done();
+            return true;
+        } else {
+            try {
+                if (file.createNewFile()) {
+                    if (onCreate != null)
+                        return onCreate.done();
+                    return true;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
     public static FilenameFilter getFilenameExtFilter(String ext) {
         return new FilenameFilter() {
             @Override

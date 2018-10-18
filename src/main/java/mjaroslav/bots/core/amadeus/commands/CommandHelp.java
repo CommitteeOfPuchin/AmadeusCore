@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
@@ -29,33 +30,34 @@ public class CommandHelp extends BaseCommand {
             EmbedBuilder builder = new EmbedBuilder().withColor(0x00FF00);
             StringBuilder desc = new StringBuilder();
             if (command != null) {
-                builder.withAuthorName(core.translate("help.commandname", handler.name + " > " + command.name));
+                builder.withAuthorName(core.translate(source.getGuild(), sender, "help.commandname",
+                        handler.name + " > " + command.name));
                 String argName = "";
                 if (hasArg("arg", argsParsed))
                     argName = argValue("arg", argsParsed);
                 if (AmadeusUtils.stringIsEmpty(argName)) {
-                    desc.append(command.getHelpDesc());
-                    desc.append("\n\n" + core.translate("help.commands.names") + "\n");
+                    desc.append(command.getHelpDesc(sender, source.getGuild()));
+                    desc.append("\n\n" + core.translate(source.getGuild(), sender, "help.commands.names") + "\n");
                     for (String name : handler.getNameHandler().getNames(command.name))
                         desc.append("\"" + name + "\" ");
                     if (!command.getArgsList().isEmpty())
-                        desc.append("\n\n" + core.translate("help.args") + "\n");
+                        desc.append("\n\n" + core.translate(source.getGuild(), sender, "help.args") + "\n");
                     for (String arg : command.getArgsList())
                         desc.append("\"" + arg + "\" ");
                 } else {
-                    desc.append(command.getHelpDesc(argName));
-                    desc.append("\n\n" + core.translate("help.commands.names") + "\n");
+                    desc.append(command.getHelpDesc(sender, source.getGuild(), argName));
+                    desc.append("\n\n" + core.translate(source.getGuild(), sender, "help.commands.names") + "\n");
                     for (String name : handler.getNameHandler().getArgNames(command.name, argName))
                         desc.append("\"" + name + "\" ");
-                    builder.withAuthorName(
-                            core.translate("help.commandname", handler.name + " > " + command.name + " > " + argName));
+                    builder.withAuthorName(core.translate(source.getGuild(), sender, "help.commandname",
+                            handler.name + " > " + command.name + " > " + argName));
                 }
 
                 builder.withDesc(desc.toString().trim());
                 answer(source, "", builder.build());
             } else {
-                builder.withAuthorName(core.translate("help.handlername", handler.name));
-                desc.append(core.translate("help.commands") + "\n");
+                builder.withAuthorName(core.translate(source.getGuild(), sender, "help.handlername", handler.name));
+                desc.append(core.translate(source.getGuild(), sender, "help.commands") + "\n");
                 for (BaseCommand com : handler.getCommandList())
                     desc.append("\"" + com.name + "\" ");
                 builder.withDesc(desc.toString().trim());
@@ -66,14 +68,14 @@ public class CommandHelp extends BaseCommand {
     }
 
     @Override
-    public String getHelpDesc(String args) {
-        String result = super.getHelpDesc(args);
+    public String getHelpDesc(IUser user, IGuild guild, String args) {
+        String result = super.getHelpDesc(user, guild, args);
         switch (args) {
             case "command":
-                result = core.translate("help." + name + ".command");
+                result = core.translate(guild, user, "help." + name + ".command");
                 break;
             case "handler":
-                result = core.translate("help." + name + ".handler");
+                result = core.translate(guild, user, "help." + name + ".handler");
                 break;
         }
         return result;

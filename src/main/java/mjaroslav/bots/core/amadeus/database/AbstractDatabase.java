@@ -4,7 +4,6 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import mjaroslav.bots.core.amadeus.lib.References;
 
 public abstract class AbstractDatabase {
     public final String name;
@@ -32,9 +31,7 @@ public abstract class AbstractDatabase {
 
     public abstract void close();
 
-    public File getFile() {
-        return DatabaseHandler.FOLDER.toPath().resolve(String.format(References.FOLDER_DATABASES, name)).toFile();
-    }
+    public abstract File getFile();
 
     public final boolean isReady() {
         return ready;

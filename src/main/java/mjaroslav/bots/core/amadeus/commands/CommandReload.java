@@ -24,12 +24,12 @@ public class CommandReload extends BaseCommandDialogYesNo {
                 core.loadPerms();
             } else if (argIndex("langs", argsParsed) == 0) {
                 core.loadLangs();
-                answerDone(source, core.translate("done.reload.langs"));
+                answerDone(source, core.translate(source.getGuild(), sender, "done.reload.langs"));
             } else
-                answerError(source, core.translate("error.badargs"));
+                answerError(source, core.translate(source.getGuild(), sender, "error.badargs"));
         } else {
             core.loadAll();
-            answerDone(source, core.translate("done.reload.all"));
+            answerDone(source, core.translate(source.getGuild(), sender, "done.reload.all"));
         }
     }
 
@@ -41,10 +41,5 @@ public class CommandReload extends BaseCommandDialogYesNo {
     @Override
     public List<String> getArgsList() {
         return Arrays.asList("all", "names", "configs", "langs");
-    }
-
-    @Override
-    public String getHelpDesc(String args) {
-        return super.getHelpDesc(args);
     }
 }

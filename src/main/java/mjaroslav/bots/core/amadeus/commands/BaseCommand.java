@@ -7,6 +7,7 @@ import java.util.List;
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
@@ -112,27 +113,27 @@ public abstract class BaseCommand {
 
     public void answerDone(IMessage source, String message) {
         long to = source.getChannel() != null ? source.getChannel().getLongID() : source.getAuthor().getLongID();
-        core.sendDone(to, message);
+        core.sendDone(to, message, source.getGuild().getLongID(), source.getAuthor().getLongID());
     }
 
     public void answerError(IMessage source, String message) {
         long to = source.getChannel() != null ? source.getChannel().getLongID() : source.getAuthor().getLongID();
-        core.sendError(to, message);
+        core.sendError(to, message, source.getGuild().getLongID(), source.getAuthor().getLongID());
     }
 
     public void answerWarn(IMessage source, String message) {
         long to = source.getChannel() != null ? source.getChannel().getLongID() : source.getAuthor().getLongID();
-        core.sendWarn(to, message);
+        core.sendWarn(to, message, source.getGuild().getLongID(), source.getAuthor().getLongID());
     }
 
-    public String getHelpDesc() {
-        return core.translate("help." + name);
+    public String getHelpDesc(IUser user, IGuild guild) {
+        return core.translate(guild, user, "help." + name);
     }
 
-    public String getHelpDesc(String args) {
-        String value = core.translate("help.noarg");
+    public String getHelpDesc(IUser user, IGuild guild, String args) {
+        String value = core.translate(guild, user, "help.noarg");
         if (getArgsList().contains(args))
-            value = core.translate("help." + name + "." + args);
+            value = core.translate(guild, user, "help." + name + "." + args);
         return value;
     }
 

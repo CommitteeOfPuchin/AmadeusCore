@@ -10,18 +10,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import mjaroslav.bots.core.amadeus.auth.AuthHandler;
-import mjaroslav.bots.core.amadeus.auth.DefaultUserHomeAuthHandler;
 import mjaroslav.bots.core.amadeus.commands.BaseCommand;
 import mjaroslav.bots.core.amadeus.commands.CommandHandler;
 import mjaroslav.bots.core.amadeus.commands.DefaultCommandHandler;
 import mjaroslav.bots.core.amadeus.config.ConfigurationHandler;
 import mjaroslav.bots.core.amadeus.config.DefaultConfiguration;
-import mjaroslav.bots.core.amadeus.database.AbstractDatabase;
-import mjaroslav.bots.core.amadeus.database.SQLiteDatabase;
-import mjaroslav.bots.core.amadeus.lang.DefaultLangHandler;
+import mjaroslav.bots.core.amadeus.database.DatabaseHandler;
+import mjaroslav.bots.core.amadeus.lang.I18n;
 import mjaroslav.bots.core.amadeus.lang.LangHandler;
-import mjaroslav.bots.core.amadeus.permissions.DefaultPermissionHandler;
-import mjaroslav.bots.core.amadeus.permissions.PPermissionHandler;
+import mjaroslav.bots.core.amadeus.lib.BotInfo;
+import mjaroslav.bots.core.amadeus.lib.FileHelper;
+import mjaroslav.bots.core.amadeus.permissions.PermissionHandler;
 import mjaroslav.bots.core.amadeus.terminal.DefaultTerminalCommandHandler;
 import mjaroslav.bots.core.amadeus.terminal.TerminalCommandHandler;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
@@ -33,20 +32,25 @@ import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
 
 public abstract class AmadeusCore {
     //
     // Handlers
     //
-    private AuthHandler authHandler;
+    private AuthHandler auth = new AuthHandler(this);
     private final HashMap<String, CommandHandler> commands = new HashMap<String, CommandHandler>();
     private final HashMap<String, ConfigurationHandler> configs = new HashMap<String, ConfigurationHandler>();
-    private final HashMap<String, AbstractDatabase> databases = new HashMap<String, AbstractDatabase>();
-    private LangHandler langs;
-    private PPermissionHandler permissions;
+
     private TerminalCommandHandler terminal;
+
+    public final I18n i18n;
+    public final LangHandler langs;
+    public final DatabaseHandler databases;
+    public final PermissionHandler permissions;
 
     //
     // Other
@@ -62,15 +66,23 @@ public abstract class AmadeusCore {
     //
     public final DefaultConfiguration DEFAULTCONFIG;
 
-    public final BotInfo info;
+    public BotInfo info;
 
     public AmadeusCore() throws Exception {
-        info = JSONUtils.fromJson(getClass().getResourceAsStream("/botinfo.json"), BotInfo.class);
-        if (!info.valid())
+        for (BotInfo check : JSONUtils.fromJson(FileHelper.fileBotInfo(), BotInfo[].class))
+            if (getClass().getName().equals(check.getMainClass())) {
+                info = check;
+                break;
+            }
+        if (info == null || !info.valid())
             throw new IllegalArgumentException("Error in 'name', 'dev_ids' or 'folder' field!");
         info.core = this;
         log = LogManager.getLogger(info.getName());
         DEFAULTCONFIG = new DefaultConfiguration(this);
+        databases = new DatabaseHandler(this);
+        i18n = new I18n(this);
+        langs = new LangHandler(this);
+        permissions = new PermissionHandler(this);
     }
 
     /**
@@ -84,6 +96,10 @@ public abstract class AmadeusCore {
         info = new BotInfo(this, name, devIds, folder);
         log = LogManager.getLogger(name);
         DEFAULTCONFIG = new DefaultConfiguration(this);
+        i18n = new I18n(this);
+        langs = new LangHandler(this);
+        databases = new DatabaseHandler(this);
+        permissions = new PermissionHandler(this);
     }
 
     /**
@@ -93,7 +109,7 @@ public abstract class AmadeusCore {
      */
     public boolean startBot() {
         try {
-            client = new ClientBuilder().withToken(getAuthHandler().loadToken()).login();
+            client = new ClientBuilder().withToken(auth.loadToken()).login();
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -110,8 +126,9 @@ public abstract class AmadeusCore {
             registerCommandHandlers();
             registerCommands();
             loadAll();
-            getTerminalHandler().registerCommands();
-            getTerminalHandler().start();
+            /*
+             * getTerminalHandler().registerCommands(); getTerminalHandler().start();
+             */
             log.info(translate("bot.ready"));
         }
         return isReady;
@@ -126,15 +143,10 @@ public abstract class AmadeusCore {
         loadPerms();
         loadConfigs();
         loadOthers();
-        loadDatabases();
     }
 
     public void loadLangs() {
-        try {
-            getLangHandler().loadLangs();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        langs.load();
     }
 
     public void loadConfigs() {
@@ -149,13 +161,8 @@ public abstract class AmadeusCore {
 
     public void loadOthers() {}
 
-    public void loadDatabases() {
-        for (AbstractDatabase handler : listOfDatabaseHandlers())
-            handler.init();
-    }
-
     public void loadPerms() {
-        getPermissionHandler().loadPermissions();
+        permissions.load();
     }
 
     public void loadNames() {
@@ -177,16 +184,6 @@ public abstract class AmadeusCore {
             }
         }
         return result;
-    }
-
-    public void setPermissionHandler(PPermissionHandler handler) {
-        permissions = handler;
-    }
-
-    public PPermissionHandler getPermissionHandler() {
-        if (permissions == null)
-            permissions = new DefaultPermissionHandler(this);
-        return permissions;
     }
 
     public void setTerminalHandler(TerminalCommandHandler newTerminal) {
@@ -237,29 +234,6 @@ public abstract class AmadeusCore {
         return new ArrayList<ConfigurationHandler>(configs.values());
     }
 
-    //
-    // Databases
-    //
-    public void addDatabaseHandler(AbstractDatabase handler) {
-        if (databases.containsKey(handler.name))
-            databases.get(handler.name).close();
-        databases.put(handler.name, handler);
-    }
-
-    public AbstractDatabase getDatabaseHandler(String name) {
-        AbstractDatabase handler = databases.get(name);
-        if (handler == null) {
-            handler = new SQLiteDatabase(name, this);
-            handler.init();
-            databases.put(name, handler);
-        }
-        return handler;
-    }
-
-    public List<AbstractDatabase> listOfDatabaseHandlers() {
-        return new ArrayList<AbstractDatabase>(databases.values());
-    }
-
     public void registerConfigurationHandlers() {
         addConfigurationHandler(DEFAULTCONFIG);
     }
@@ -286,36 +260,6 @@ public abstract class AmadeusCore {
     public void registerCommands() {
         for (CommandHandler handler : listOfCommandHandlers())
             handler.registerCommands();
-    }
-
-    //
-    // Langs
-    //
-    public void setLangHandler(LangHandler handler) {
-        langs = handler;
-    }
-
-    public LangHandler getLangHandler() {
-        if (langs == null)
-            langs = new DefaultLangHandler(this);
-        return langs;
-    }
-
-    public String translate(String key, Object... objects) {
-        return getLangHandler().translate(key, objects);
-    }
-
-    //
-    // Auth
-    //
-    public AuthHandler getAuthHandler() {
-        if (authHandler == null)
-            authHandler = new DefaultUserHomeAuthHandler(this);
-        return authHandler;
-    }
-
-    public void setAuthHandler(AuthHandler authHandler) {
-        this.authHandler = authHandler;
     }
 
     public int getCommandCount() {
@@ -366,34 +310,73 @@ public abstract class AmadeusCore {
                 embed);
     }
 
-    public void sendError(long channelId, String text) {
-        String title = String.format(":no_entry_sign: %s", translate("answer.error"));
+    public String translate(IGuild guild, IUser user, String key, Object... args) {
+        return langs.translate(user, guild, key, args);
+    }
+
+    public String translate(long userId, long guildId, String key, Object... args) {
+        return langs.translate(userId, guildId, key, args);
+    }
+
+    public String translate(String key, Object... args) {
+        return langs.translate(-1L, -1L, key, args);
+    }
+
+    public void sendError(long channelId, String text, long guild, long user) {
+        String title = String.format(":no_entry_sign: %s", translate(user, guild, "answer.error"));
         EmbedObject embed = new EmbedBuilder().withTitle(title).withDesc(text).withColor(0xFF0000).build();
         client.getChannelByID(channelId).sendMessage(embed);
     }
 
-    public void sendError(IMessage source, String text) {
-        sendError(source.getChannel() != null ? source.getChannel().getLongID() : source.getAuthor().getLongID(), text);
+    public void sendError(IMessage source, String text, long guildId, long userId) {
+        sendError(source.getChannel() != null ? source.getChannel().getLongID() : source.getAuthor().getLongID(), text,
+                guildId, userId);
     }
 
-    public void sendDone(long channelId, String text) {
-        String title = String.format(":white_check_mark: %s", translate("answer.done"));
+    public void sendError(long channelId, String text) {
+        sendError(channelId, text, -1L, -1L);
+    }
+
+    public void sendError(IMessage source, String text) {
+        sendError(source, text, -1L, -1L);
+    }
+
+    public void sendDone(long channelId, String text, long guildId, long userId) {
+        String title = String.format(":white_check_mark: %s", translate(userId, guildId, "answer.done"));
         EmbedObject embed = new EmbedBuilder().withTitle(title).withDesc(text).withColor(0x00FF00).build();
         client.getChannelByID(channelId).sendMessage(embed);
     }
 
-    public void sendDone(IMessage source, String text) {
-        sendDone(source.getChannel() != null ? source.getChannel().getLongID() : source.getAuthor().getLongID(), text);
+    public void sendDone(IMessage source, String text, long guildId, long userId) {
+        sendDone(source.getChannel() != null ? source.getChannel().getLongID() : source.getAuthor().getLongID(), text,
+                guildId, userId);
     }
 
-    public void sendWarn(long channelId, String text) {
-        String title = String.format(":warning: %s", translate("answer.warn"));
+    public void sendDone(long channelId, String text) {
+        sendDone(channelId, text, -1L, -1L);
+    }
+
+    public void sendDone(IMessage source, String text) {
+        sendDone(source, text, -1L, -1L);
+    }
+
+    public void sendWarn(long channelId, String text, long guildId, long userId) {
+        String title = String.format(":warning: %s", translate(userId, guildId, "answer.warn"));
         EmbedObject embed = new EmbedBuilder().withTitle(title).withDesc(text).withColor(0xFFFF00).build();
         client.getChannelByID(channelId).sendMessage(embed);
     }
 
+    public void sendWarn(IMessage source, String text, long guildId, long userId) {
+        sendWarn(source.getChannel() != null ? source.getChannel().getLongID() : source.getAuthor().getLongID(), text,
+                guildId, userId);
+    }
+
     public void sendWarn(IMessage source, String text) {
-        sendWarn(source.getChannel() != null ? source.getChannel().getLongID() : source.getAuthor().getLongID(), text);
+        sendWarn(source, text, -1L, -1L);
+    }
+
+    public void sendWarn(long channelId, String text) {
+        sendWarn(channelId, text, -1L, -1L);
     }
 
     public void sendError(long channelId, Exception e) {
@@ -413,13 +396,9 @@ public abstract class AmadeusCore {
         isReady = false;
         if (client != null)
             client.logout();
-        for (AbstractDatabase handler : listOfDatabaseHandlers())
-            handler.close();
     }
 
-    public void onReady() {
-        new DefaultPermissionHandler(this).loadPermissions();
-    }
+    public void onReady() {}
 
     public static class EventHandler {
         private final AmadeusCore core;

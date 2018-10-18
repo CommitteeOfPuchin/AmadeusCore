@@ -1,5 +1,6 @@
 package mjaroslav.bots.core.amadeus.database;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -10,8 +11,12 @@ public class SQLiteDatabase extends AbstractDatabase {
     private Connection connection;
     private Statement statement;
 
-    public SQLiteDatabase(String name) {
+    private final File file;
+
+    public SQLiteDatabase(String name, File file) {
         super(name);
+        this.file = file;
+        file.getParentFile().mkdirs();
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
@@ -77,5 +82,10 @@ public class SQLiteDatabase extends AbstractDatabase {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public File getFile() {
+        return file;
     }
 }

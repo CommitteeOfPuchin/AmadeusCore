@@ -21,7 +21,7 @@ public abstract class BaseCommandDialogYesNo extends BaseCommand {
                 executeYes(sender, source, args);
             else {
                 cache.put(source.getAuthor().getLongID(), args);
-                answerWarn(source, core.translate("answer.dialogyesno"));
+                answerWarn(source, core.translate(source.getGuild(), sender, "answer.dialogyesno"));
             }
             return;
         }
@@ -32,14 +32,14 @@ public abstract class BaseCommandDialogYesNo extends BaseCommand {
                 cache.remove(source.getAuthor().getLongID());
                 executeYes(sender, source, temp);
             } else
-                answerError(source, core.translate("answer.dialowyesno.noneed"));
+                answerError(source, core.translate(source.getGuild(), sender, "answer.dialowyesno.noneed"));
         } else {
             if (cache.containsKey(source.getAuthor().getLongID())) {
                 String temp = cache.get(source.getAuthor().getLongID());
                 cache.remove(source.getAuthor().getLongID());
                 executeNo(sender, source, temp);
             } else
-                answerError(source, core.translate("answer.dialowyesno.noneed"));
+                answerError(source, core.translate(source.getGuild(), sender, "answer.dialowyesno.noneed"));
         }
     }
 
