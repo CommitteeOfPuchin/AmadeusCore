@@ -24,83 +24,83 @@ public abstract class BaseCommand {
 
     public abstract void execute(IUser sender, IMessage source, String args) throws Exception;
 
-    public boolean isForce(String args) {
+    public boolean isForce(String args, IGuild guild, IUser user) {
         try {
-            return hasArg("all", "force", AmadeusUtils.parseArgsToArray(args));
+            return hasArg("all", "force", AmadeusUtils.parseArgsToArray(args), guild, user);
         } catch (Exception e) {}
         try {
-            return hasArg("all", "force", AmadeusUtils.parseArgsToMap(args));
+            return hasArg("all", "force", AmadeusUtils.parseArgsToMap(args), guild, user);
         } catch (Exception e) {}
         return false;
     }
 
-    public boolean isYes(String arg) {
-        for (String checkArg : handler.getNameHandler().getArgNames("all", "true"))
+    public boolean isYes(String arg, IGuild guild, IUser user) {
+        for (String checkArg : core.langs.getNamesArg(guild, user, "all", "true"))
             if (arg.toLowerCase().equals(checkArg))
                 return true;
         return false;
     }
 
-    public boolean isAll(String arg) {
-        for (String checkArg : handler.getNameHandler().getArgNames("all", "all"))
+    public boolean isAll(String arg, IGuild guild, IUser user) {
+        for (String checkArg : core.langs.getNamesArg(guild, user, "all", "all"))
             if (arg.toLowerCase().equals(checkArg))
                 return true;
         return false;
     }
 
-    public boolean hasArg(String command, String arg, List<String> argsParsed) {
-        for (String checkArg : handler.getNameHandler().getArgNames(command, arg))
+    public boolean hasArg(String command, String arg, List<String> argsParsed, IGuild guild, IUser user) {
+        for (String checkArg : core.langs.getNamesArg(guild, user, command, arg))
             if (argsParsed.contains(checkArg))
                 return true;
         return false;
     }
 
-    public boolean hasArg(String command, String arg, HashMap<String, String> argsParsed) {
-        for (String checkArg : handler.getNameHandler().getArgNames(command, arg))
+    public boolean hasArg(String command, String arg, HashMap<String, String> argsParsed, IGuild guild, IUser user) {
+        for (String checkArg : core.langs.getNamesArg(guild, user, command, arg))
             if (argsParsed.containsKey(checkArg))
                 return true;
         return false;
     }
 
-    public boolean hasArg(String arg, List<String> argsParsed) {
-        for (String checkArg : handler.getNameHandler().getArgNames(name, arg))
+    public boolean hasArg(String arg, List<String> argsParsed, IGuild guild, IUser user) {
+        for (String checkArg : core.langs.getNamesArg(guild, user, name, arg))
             if (argsParsed.contains(checkArg))
                 return true;
         return false;
     }
 
-    public boolean hasArgAt(String arg, int pos, List<String> argsParsed) {
+    public boolean hasArgAt(String arg, int pos, List<String> argsParsed, IGuild guild, IUser user) {
         if (pos >= argsParsed.size())
             return false;
-        for (String checkArg : handler.getNameHandler().getArgNames(name, arg))
+        for (String checkArg : core.langs.getNamesArg(guild, user, name, arg))
             if (argsParsed.get(pos).equals(checkArg))
                 return true;
         return false;
     }
 
-    public boolean hasArg(String arg, HashMap<String, String> argsParsed) {
-        for (String checkArg : handler.getNameHandler().getArgNames(name, arg))
+    public boolean hasArg(String arg, HashMap<String, String> argsParsed, IGuild guild, IUser user) {
+        for (String checkArg : core.langs.getNamesArg(guild, user, name, arg))
             if (argsParsed.containsKey(checkArg))
                 return true;
         return false;
     }
 
-    public String argValue(String arg, HashMap<String, String> argsParsed) {
-        for (String checkArg : handler.getNameHandler().getArgNames(name, arg))
+    public String argValue(String arg, HashMap<String, String> argsParsed, IGuild guild, IUser user) {
+        for (String checkArg : core.langs.getNamesArg(guild, user, name, arg))
             if (argsParsed.containsKey(checkArg))
                 return argsParsed.get(checkArg);
         return null;
     }
 
-    public int argIndex(String arg, List<String> argsParsed) {
-        for (String checkArg : handler.getNameHandler().getArgNames(name, arg))
+    public int argIndex(String arg, List<String> argsParsed, IGuild guild, IUser user) {
+        for (String checkArg : core.langs.getNamesArg(guild, user, name, arg))
             if (argsParsed.contains(checkArg))
                 return argsParsed.indexOf(checkArg);
         return -1;
     }
 
-    public String argValue(String arg, List<String> argsParsed) {
-        int index = argIndex(arg, argsParsed);
+    public String argValue(String arg, List<String> argsParsed, IGuild guild, IUser user) {
+        int index = argIndex(arg, argsParsed, guild, user);
         if (index >= 0 && argsParsed.size() > index)
             return argsParsed.get(index + 1);
         return null;

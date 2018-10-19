@@ -6,15 +6,14 @@ import java.util.List;
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IUser;
 
 public class DefaultCommandHandler extends CommandHandler {
     private final HashMap<String, BaseCommand> commands = new HashMap<String, BaseCommand>();
 
-    private final CommandNameHandler nameHandler = new DefaultCommandNameHandler(core, this);
-
     public DefaultCommandHandler(AmadeusCore core, String name) {
         super(core, name);
-        getNameHandler().loadNames();
     }
 
     @Override
@@ -28,11 +27,6 @@ public class DefaultCommandHandler extends CommandHandler {
     }
 
     @Override
-    public List<String> getPrefixes() {
-        return getNameHandler().getPrefixes();
-    }
-
-    @Override
     public List<BaseCommand> getCommandList() {
         return new ArrayList<BaseCommand>(commands.values());
     }
@@ -40,11 +34,16 @@ public class DefaultCommandHandler extends CommandHandler {
     @Override
     public boolean executeCommand(MessageReceivedEvent event) {
         String text = event.getMessage().getContent();
-        String commandString = AmadeusUtils.removePreifx(text, core, getPrefixes(), false);
+        String commandString = AmadeusUtils.removePreifx(text, core, core.langs.getPrefixes(
+                event.getChannel() != null ? event.getChannel().getGuild() : null, event.getAuthor()), false);
         if (text.length() > commandString.length()) {
-            BaseCommand command = getCommand(commandString);
+            BaseCommand command = getCommand(event.getChannel() != null ? event.getChannel().getGuild() : null,
+                    event.getAuthor(), commandString);
             if (command != null) {
-                String args = AmadeusUtils.removePreifx(commandString, core, command, false);
+                String args = AmadeusUtils.removePreifx(commandString, core,
+                        core.langs.getNames(event.getChannel() != null ? event.getChannel().getGuild() : null,
+                                event.getAuthor(), name + "." + command.name),
+                        false);
                 try {
                     if (core.permissions.canUseCommand(event.getGuild(), event.getAuthor(), command, null))
                         command.execute(event.getAuthor(), event.getMessage(), args);
@@ -68,9 +67,9 @@ public class DefaultCommandHandler extends CommandHandler {
     }
 
     @Override
-    public BaseCommand getCommand(String text) {
+    public BaseCommand getCommand(IGuild guild, IUser user, String text) {
         for (BaseCommand command : getCommandList())
-            for (String name : getNameHandler().getNames(command.name)) {
+            for (String name : core.langs.getNames(guild, user, command.name)) {
                 if (text.toLowerCase().startsWith(name) && (text.toLowerCase().replaceFirst(name, "").startsWith(" ")
                         || text.toLowerCase().replaceFirst(name, "").equals(""))) {
                     return command;
@@ -82,15 +81,5 @@ public class DefaultCommandHandler extends CommandHandler {
     @Override
     public void registerCommand(BaseCommand command) {
         commands.put(command.name, command);
-    }
-
-    @Override
-    public CommandNameHandler getNameHandler() {
-        return nameHandler;
-    }
-
-    @Override
-    public boolean hasNameHandller() {
-        return true;
     }
 }

@@ -3,6 +3,7 @@ package mjaroslav.bots.core.amadeus.lang;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.database.AbstractDatabase;
 import mjaroslav.bots.core.amadeus.lib.FileHelper;
@@ -45,12 +46,44 @@ public class LangHandler {
     }
 
     public String translate(long userId, long guildId, String key, Object... args) {
+        return core.i18n.translate(getLang(userId, guildId), key, args);
+    }
+
+    public List<String> getNames(long userId, long guildId, String key) {
+        return core.i18n.getNames(getLang(userId, guildId), key);
+    }
+
+    public List<String> getNames(IGuild guild, IUser user, String key) {
+        return core.i18n.getNames(getLang(user != null ? user.getLongID() : -1L, guild != null ? guild.getLongID() : -1L), key);
+    }
+    
+    public List<String> getPrefixes() {
+        return core.i18n.getPrefixes();
+    }
+
+    public List<String> getPrefixes(IGuild guild, IUser user) {
+        return core.i18n.getPrefixes(getLang(user != null ? user.getLongID() : -1L, guild != null ? guild.getLongID() : -1L));
+    }
+    
+    public List<String> getPrefixes(long userId, long guildId) {
+        return core.i18n.getPrefixes(getLang(userId, guildId));
+    }
+
+    public List<String> getNamesArg(IGuild guild, IUser user, String commandKey, String argKey) {
+        return core.i18n.getNamesArg(getLang(user != null ? user.getLongID() : -1L, guild != null ? guild.getLongID() : -1L), commandKey, argKey);
+    }
+    
+    public List<String> getNamesArg(long userId, long guildId, String commandKey, String argKey) {
+        return core.i18n.getNamesArg(getLang(userId, guildId), commandKey, argKey);
+    }
+
+    public String getLang(long userId, long guildId) {
         String lang = I18n.defaultLang;
         if (GUILDS.containsKey(guildId))
             lang = GUILDS.get(guildId);
         if (USERS.containsKey(userId))
             lang = USERS.get(userId);
-        return core.i18n.translate(lang, key, args);
+        return lang;
     }
 
     public String translate(IUser user, IGuild guild, String key, Object... args) {

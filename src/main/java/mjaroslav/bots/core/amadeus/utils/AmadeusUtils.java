@@ -4,12 +4,19 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import org.apache.commons.io.FilenameUtils;
 import mjaroslav.bots.core.amadeus.AmadeusCore;
-import mjaroslav.bots.core.amadeus.commands.BaseCommand;
 
 public class AmadeusUtils {
+    public static final Comparator<String> LENGTH_SORTER = new Comparator<String>() {
+        @Override
+        public int compare(String o1, String o2) {
+            return o2.length() - o1.length();
+        }
+    };
+
     public static boolean existsOrCreateFolder(File folder) {
         return (folder.exists() && folder.isDirectory()) || folder.mkdirs();
     }
@@ -183,10 +190,6 @@ public class AmadeusUtils {
                     return text.substring(prefix.length()).trim();
         }
         return text;
-    }
-
-    public static String removePreifx(String text, AmadeusCore core, BaseCommand command, boolean checkSpace) {
-        return removePreifx(text, core, command.handler.getNameHandler().getNames(command.name), checkSpace);
     }
 
     public static void waitAction(long checkTime, Action action) {

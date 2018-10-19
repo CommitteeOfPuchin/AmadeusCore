@@ -20,25 +20,34 @@ public class CommandHelp extends BaseCommand {
         if (args.length() > 0) {
             HashMap<String, String> argsParsed = AmadeusUtils.parseArgsToMap(args);
             CommandHandler handler = null;
-            if (hasArg("handler", argsParsed))
-                handler = core.getCommandHandler(argValue("handler", argsParsed));
+            if (hasArg("handler", argsParsed, source.getChannel() != null ? source.getChannel().getGuild() : null,
+                    sender))
+                handler = core.getCommandHandler(argValue("handler", argsParsed,
+                        source.getChannel() != null ? source.getChannel().getGuild() : null, sender));
             if (handler == null)
                 handler = this.handler;
             BaseCommand command = null;
-            if (hasArg("command", argsParsed))
-                command = handler.getCommand(argValue("command", argsParsed));
+            if (hasArg("command", argsParsed, source.getChannel() != null ? source.getChannel().getGuild() : null,
+                    sender))
+                command = handler.getCommand(source.getChannel() != null ? source.getChannel().getGuild() : null,
+                        sender, argValue("command", argsParsed,
+                                source.getChannel() != null ? source.getChannel().getGuild() : null, sender));
             EmbedBuilder builder = new EmbedBuilder().withColor(0x00FF00);
             StringBuilder desc = new StringBuilder();
             if (command != null) {
                 builder.withAuthorName(core.translate(source.getGuild(), sender, "help.commandname",
                         handler.name + " > " + command.name));
                 String argName = "";
-                if (hasArg("arg", argsParsed))
-                    argName = argValue("arg", argsParsed);
+                if (hasArg("arg", argsParsed, source.getChannel() != null ? source.getChannel().getGuild() : null,
+                        sender))
+                    argName = argValue("arg", argsParsed,
+                            source.getChannel() != null ? source.getChannel().getGuild() : null, sender);
                 if (AmadeusUtils.stringIsEmpty(argName)) {
                     desc.append(command.getHelpDesc(sender, source.getGuild()));
                     desc.append("\n\n" + core.translate(source.getGuild(), sender, "help.commands.names") + "\n");
-                    for (String name : handler.getNameHandler().getNames(command.name))
+                    for (String name : core.langs.getNames(
+                            source.getChannel() != null ? source.getChannel().getGuild() : null, sender,
+                            command.handler.name + "." + command.name))
                         desc.append("\"" + name + "\" ");
                     if (!command.getArgsList().isEmpty())
                         desc.append("\n\n" + core.translate(source.getGuild(), sender, "help.args") + "\n");
@@ -47,7 +56,9 @@ public class CommandHelp extends BaseCommand {
                 } else {
                     desc.append(command.getHelpDesc(sender, source.getGuild(), argName));
                     desc.append("\n\n" + core.translate(source.getGuild(), sender, "help.commands.names") + "\n");
-                    for (String name : handler.getNameHandler().getArgNames(command.name, argName))
+                    for (String name : core.langs.getNamesArg(
+                            source.getChannel() != null ? source.getChannel().getGuild() : null, sender,
+                            command.handler.name + "." + command.name, argName))
                         desc.append("\"" + name + "\" ");
                     builder.withAuthorName(core.translate(source.getGuild(), sender, "help.commandname",
                             handler.name + " > " + command.name + " > " + argName));

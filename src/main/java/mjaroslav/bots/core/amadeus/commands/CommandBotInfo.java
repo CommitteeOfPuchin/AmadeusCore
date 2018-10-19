@@ -19,9 +19,12 @@ public class CommandBotInfo extends BaseCommand {
         StringBuilder answer = new StringBuilder();
         ArrayList<String> argsParsed = AmadeusUtils.parseArgsToArray(args);
         if (!argsParsed.isEmpty()) {
-            if (hasArgAt("discord", 0, argsParsed)) {
-                if (hasArgAt("perms", 1, argsParsed)) {
-                    if (hasArgAt("list", 2, argsParsed))
+            if (hasArgAt("discord", 0, argsParsed, source.getChannel() != null ? source.getChannel().getGuild() : null,
+                    sender)) {
+                if (hasArgAt("perms", 1, argsParsed,
+                        source.getChannel() != null ? source.getChannel().getGuild() : null, sender)) {
+                    if (hasArgAt("list", 2, argsParsed,
+                            source.getChannel() != null ? source.getChannel().getGuild() : null, sender))
                         for (Permissions permission : Permissions.values())
                             answer.append("`" + permission.name() + "` ");
                     else {
@@ -29,15 +32,18 @@ public class CommandBotInfo extends BaseCommand {
                                 .getPermissionsForGuild(source.getGuild()))
                             answer.append("`" + permission.name() + "` ");
                     }
-                } else if (hasArgAt("emoji", 1, argsParsed)) {
+                } else if (hasArgAt("emoji", 1, argsParsed,
+                        source.getChannel() != null ? source.getChannel().getGuild() : null, sender)) {
                     long id = source.getGuild().getLongID();
                     if (argsParsed.size() > 2)
                         id = Long.parseLong(argsParsed.get(2));
                     for (IEmoji emoji : core.getClient().getGuildByID(id).getEmojis())
                         if (!emoji.isAnimated())
                             answer.append("<:" + emoji.getName() + ":" + emoji.getStringID() + "> ");
-                } else if (hasArgAt("roles", 1, argsParsed)) {
-                    if (hasArgAt("list", 2, argsParsed))
+                } else if (hasArgAt("roles", 1, argsParsed,
+                        source.getChannel() != null ? source.getChannel().getGuild() : null, sender)) {
+                    if (hasArgAt("list", 2, argsParsed,
+                            source.getChannel() != null ? source.getChannel().getGuild() : null, sender))
                         for (IRole role : source.getGuild().getRoles())
                             answer.append(role.getName() + " - " + role.getLongID() + "\n");
                     else {

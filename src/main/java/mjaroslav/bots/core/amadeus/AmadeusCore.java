@@ -138,7 +138,6 @@ public abstract class AmadeusCore {
     // Load methods, used in reload command
     //
     public void loadAll() {
-        loadNames();
         loadLangs();
         loadPerms();
         loadConfigs();
@@ -163,12 +162,6 @@ public abstract class AmadeusCore {
 
     public void loadPerms() {
         permissions.load();
-    }
-
-    public void loadNames() {
-        for (CommandHandler handler : listOfCommandHandlers())
-            if (handler.hasNameHandller())
-                handler.getNameHandler().loadNames();
     }
 
     public List<String> getPermissionsList(String handlerName) {

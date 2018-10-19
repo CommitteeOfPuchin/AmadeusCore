@@ -22,11 +22,13 @@ public class CommandPermsInfo extends BaseCommand {
             answer.append(core.translate(source.getGuild(), sender, "permsinfo.perms") + "\n");
             for (String perm : core.permissions.getPermissions(source.getGuild(), sender))
                 answer.append("`" + perm + "` ");
-        } else if (hasArg("discord", argsParsed)) {
+        } else if (hasArg("discord", argsParsed, source.getChannel() != null ? source.getChannel().getGuild() : null,
+                sender)) {
             if (source.getChannel() != null) {
                 long id = sender.getLongID();
                 try {
-                    id = Long.parseLong(argValue("discord", argsParsed));
+                    id = Long.parseLong(argValue("discord", argsParsed,
+                            source.getChannel() != null ? source.getChannel().getGuild() : null, sender));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

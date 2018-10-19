@@ -17,7 +17,7 @@ public abstract class BaseCommandDialogYesNo extends BaseCommand {
     @Override
     public final void execute(IUser sender, IMessage source, String args) throws Exception {
         if (!cache.containsKey(source.getAuthor().getLongID())) {
-            if (isForce(args))
+            if (isForce(args, source.getChannel() != null ? source.getChannel().getGuild() : null, sender))
                 executeYes(sender, source, args);
             else {
                 cache.put(source.getAuthor().getLongID(), args);
@@ -26,7 +26,7 @@ public abstract class BaseCommandDialogYesNo extends BaseCommand {
             return;
         }
         List<String> argsParsed = AmadeusUtils.parseArgsToArray(args);
-        if (isYes(argsParsed.get(0))) {
+        if (isYes(argsParsed.get(0), source.getChannel() != null ? source.getChannel().getGuild() : null, sender)) {
             if (cache.containsKey(source.getAuthor().getLongID())) {
                 String temp = cache.get(source.getAuthor().getLongID());
                 cache.remove(source.getAuthor().getLongID());

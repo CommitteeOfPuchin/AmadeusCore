@@ -18,7 +18,7 @@ public class FileHelper {
     public static File fileBotInfo() {
         return new File("bot.info");
     }
-    
+
     public static File fileBotToken() {
         return new File("bot.token");
     }
@@ -73,6 +73,10 @@ public class FileHelper {
 
     public static File fileLanguagesDatabase(AmadeusCore core) {
         return folderLanguages(core).resolve("storage." + EXT_DATABASE).toFile();
+    }
+
+    public static File fileLanguageCommands(AmadeusCore core, String name) {
+        return folderLanguages(core).resolve(name + "." + EXT_JSON).toFile();
     }
 
     public static File fileLanguage(AmadeusCore core, String name) {

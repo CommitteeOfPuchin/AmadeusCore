@@ -15,14 +15,16 @@ public class CommandReload extends BaseCommandDialogYesNo {
     @Override
     public void executeYes(IUser sender, IMessage source, String args) throws Exception {
         List<String> argsParsed = AmadeusUtils.parseArgsToArray(args);
-        if (!argsParsed.isEmpty() && argIndex("all", argsParsed) != 0) {
-            if (argIndex("names", argsParsed) == 0) {
-                core.loadNames();
-            } else if (argIndex("configs", argsParsed) == 0) {
+        if (!argsParsed.isEmpty() && argIndex("all", argsParsed,
+                source.getChannel() != null ? source.getChannel().getGuild() : null, sender) != 0) {
+            if (argIndex("configs", argsParsed, source.getChannel() != null ? source.getChannel().getGuild() : null,
+                    sender) == 0) {
                 core.loadConfigs();
-            } else if (argIndex("perms", argsParsed) == 0) {
+            } else if (argIndex("perms", argsParsed,
+                    source.getChannel() != null ? source.getChannel().getGuild() : null, sender) == 0) {
                 core.loadPerms();
-            } else if (argIndex("langs", argsParsed) == 0) {
+            } else if (argIndex("langs", argsParsed,
+                    source.getChannel() != null ? source.getChannel().getGuild() : null, sender) == 0) {
                 core.loadLangs();
                 answerDone(source, core.translate(source.getGuild(), sender, "done.reload.langs"));
             } else
