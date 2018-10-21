@@ -15,29 +15,25 @@ public class CommandReload extends BaseCommandDialogYesNo {
     @Override
     public void executeYes(IUser sender, IMessage source, String args) throws Exception {
         List<String> argsParsed = AmadeusUtils.parseArgsToArray(args);
-        if (!argsParsed.isEmpty() && argIndex("all", argsParsed,
-                source.getChannel() != null ? source.getChannel().getGuild() : null, sender) != 0) {
-            if (argIndex("configs", argsParsed, source.getChannel() != null ? source.getChannel().getGuild() : null,
-                    sender) == 0) {
+        if (!argsParsed.isEmpty() && argIndex(source, "all", argsParsed) != 0) {
+            if (argIndex(source, "configs", argsParsed) == 0) {
                 core.loadConfigs();
-            } else if (argIndex("perms", argsParsed,
-                    source.getChannel() != null ? source.getChannel().getGuild() : null, sender) == 0) {
+            } else if (argIndex(source, "perms", argsParsed) == 0) {
                 core.loadPerms();
-            } else if (argIndex("langs", argsParsed,
-                    source.getChannel() != null ? source.getChannel().getGuild() : null, sender) == 0) {
+            } else if (argIndex(source, "langs", argsParsed) == 0) {
                 core.loadLangs();
-                answerDone(source, core.translate(source.getGuild(), sender, "done.reload.langs"));
+                core.sendDone(source, core.langs.translate(source, "done.reload.langs"));
             } else
-                answerError(source, core.translate(source.getGuild(), sender, "error.badargs"));
+                core.sendError(source, core.langs.translate(source, "error.badargs"));
         } else {
             core.loadAll();
-            answerDone(source, core.translate(source.getGuild(), sender, "done.reload.all"));
+            core.sendDone(source, core.langs.translate(source, "done.reload.all"));
         }
     }
 
     @Override
     public void executeNo(IUser sender, IMessage source, String args) throws Exception {
-        answerDone(source, "Reloading canceled");
+        core.sendDone(source, "Reloading canceled");
     }
 
     @Override

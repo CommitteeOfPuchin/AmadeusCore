@@ -21,7 +21,7 @@ public class PermissionHandler {
 
     public void load() {
         STORAGE.clear();
-        for (IGuild guild : core.getClient().getGuilds()) {
+        for (IGuild guild : core.client.getGuilds()) {
             STORAGE.put(guild.getLongID(), new GuildPermissionHandler(core, guild.getLongID()));
             STORAGE.get(guild.getLongID()).load();
         }
@@ -61,7 +61,7 @@ public class PermissionHandler {
     }
 
     public boolean canUseCommand(IGuild guild, IUser user, BaseCommand command, String arg) {
-        if (core.devMode)
+        if (core.optionDevMode)
             for (long id : core.info.getDevIds())
                 if (id == user.getLongID())
                     return true;

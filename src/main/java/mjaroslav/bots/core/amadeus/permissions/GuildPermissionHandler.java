@@ -76,9 +76,7 @@ public class GuildPermissionHandler {
                 ;
             for (File file : FOLDER.listFiles(FileHelper.ROLEEXTFILTER)) {
                 String name = FilenameUtils.removeExtension(file.getName());
-                System.out.println(name);
                 try {
-                    System.out.println(name);
                     PERMISSIONROLES.put(name, JSONUtils.fromJson(file, PermissionRole.class));
                 } catch (IOException e) {
                     e.printStackTrace();

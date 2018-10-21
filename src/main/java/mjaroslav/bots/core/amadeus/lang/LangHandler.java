@@ -5,9 +5,11 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import mjaroslav.bots.core.amadeus.AmadeusCore;
+import mjaroslav.bots.core.amadeus.commands.BaseCommand;
 import mjaroslav.bots.core.amadeus.database.AbstractDatabase;
 import mjaroslav.bots.core.amadeus.lib.FileHelper;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
 public class LangHandler {
@@ -45,39 +47,67 @@ public class LangHandler {
         }
     }
 
-    public String translate(long userId, long guildId, String key, Object... args) {
-        return core.i18n.translate(getLang(userId, guildId), key, args);
-    }
-
-    public List<String> getNames(long userId, long guildId, String key) {
-        return core.i18n.getNames(getLang(userId, guildId), key);
-    }
-
-    public List<String> getNames(IGuild guild, IUser user, String key) {
-        return core.i18n.getNames(getLang(user != null ? user.getLongID() : -1L, guild != null ? guild.getLongID() : -1L), key);
+    public List<String> getNamesCustom(IMessage message, String key) {
+        return core.i18n.getNamesCustom(getLang(message), key);
     }
     
-    public List<String> getPrefixes() {
-        return core.i18n.getPrefixes();
+    public List<String> getNamesCustom(IGuild guild, IUser user, String key) {
+        return core.i18n.getNamesCustom(getLang(guild, user), key);
     }
 
-    public List<String> getPrefixes(IGuild guild, IUser user) {
-        return core.i18n.getPrefixes(getLang(user != null ? user.getLongID() : -1L, guild != null ? guild.getLongID() : -1L));
-    }
-    
-    public List<String> getPrefixes(long userId, long guildId) {
-        return core.i18n.getPrefixes(getLang(userId, guildId));
+    public List<String> getNamesCustom(long guildId, long userId, String key) {
+        return core.i18n.getNamesCustom(getLang(guildId, userId), key);
     }
 
-    public List<String> getNamesArg(IGuild guild, IUser user, String commandKey, String argKey) {
-        return core.i18n.getNamesArg(getLang(user != null ? user.getLongID() : -1L, guild != null ? guild.getLongID() : -1L), commandKey, argKey);
-    }
-    
-    public List<String> getNamesArg(long userId, long guildId, String commandKey, String argKey) {
-        return core.i18n.getNamesArg(getLang(userId, guildId), commandKey, argKey);
+    public List<String> getNames(IGuild guild, IUser user, String handlerKey, String commandKey) {
+        return core.i18n.getNames(getLang(guild, user), handlerKey, commandKey);
     }
 
-    public String getLang(long userId, long guildId) {
+    public List<String> getNames(long guildId, long userId, String handlerKey, String commandKey) {
+        return core.i18n.getNames(getLang(guildId, userId), handlerKey, commandKey);
+    }
+
+    public List<String> getNamesArg(IGuild guild, IUser user, String handlerKey, String commandKey, String argKey) {
+        return core.i18n.getNamesArg(getLang(guild, user), handlerKey, commandKey, argKey);
+    }
+
+    public List<String> getNamesArg(long guildId, long userId, String handlerKey, String commandKey, String argKey) {
+        return core.i18n.getNamesArg(getLang(guildId, userId), handlerKey, commandKey, argKey);
+    }
+
+    public List<String> getNames(IGuild guild, IUser user, BaseCommand command) {
+        return core.i18n.getNames(getLang(guild, user), command.handler.name, command.name);
+    }
+
+    public List<String> getNames(long guildId, long userId, BaseCommand command) {
+        return core.i18n.getNames(getLang(guildId, userId), command.handler.name, command.name);
+    }
+
+    public List<String> getNamesArg(IGuild guild, IUser user, BaseCommand command, String argKey) {
+        return core.i18n.getNamesArg(getLang(guild, user), command.handler.name, command.name, argKey);
+    }
+
+    public List<String> getNamesArg(long guildId, long userId, BaseCommand command, String argKey) {
+        return core.i18n.getNamesArg(getLang(guildId, userId), command.handler.name, command.name, argKey);
+    }
+
+    public List<String> getNames(IMessage message, String handlerKey, String commandKey) {
+        return core.i18n.getNames(getLang(message), handlerKey, commandKey);
+    }
+
+    public List<String> getNamesArg(IMessage message, String handlerKey, String commandKey, String argKey) {
+        return core.i18n.getNamesArg(getLang(message), handlerKey, commandKey, argKey);
+    }
+
+    public List<String> getNames(IMessage message, BaseCommand command) {
+        return core.i18n.getNames(getLang(message), command.handler.name, command.name);
+    }
+
+    public List<String> getNamesArg(IMessage message, BaseCommand command, String argKey) {
+        return core.i18n.getNamesArg(getLang(message), command.handler.name, command.name, argKey);
+    }
+
+    public String getLang(long guildId, long userId) {
         String lang = I18n.defaultLang;
         if (GUILDS.containsKey(guildId))
             lang = GUILDS.get(guildId);
@@ -86,8 +116,24 @@ public class LangHandler {
         return lang;
     }
 
-    public String translate(IUser user, IGuild guild, String key, Object... args) {
-        return translate(user != null ? user.getLongID() : -1L, guild != null ? guild.getLongID() : -1L, key, args);
+    public String getLang(IMessage message) {
+        return getLang(message.getGuild(), message.getAuthor());
+    }
+
+    public String getLang(IGuild guild, IUser user) {
+        return getLang(guild != null ? guild.getLongID() : -1L, user != null ? user.getLongID() : -1L);
+    }
+
+    public String translate(long guildId, long userId, String key, Object... args) {
+        return core.i18n.translate(getLang(guildId, userId), key, args);
+    }
+
+    public String translate(IGuild guild, IUser user, String key, Object... args) {
+        return core.i18n.translate(getLang(guild, user), key, args);
+    }
+
+    public String translate(IMessage message, String key, Object... args) {
+        return core.i18n.translate(getLang(message), key, args);
     }
 
     public void setLangToGuild(long guildId, String key) {

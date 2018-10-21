@@ -11,13 +11,13 @@ public class CommandExit extends BaseCommandDialogYesNo {
 
     @Override
     public void executeYes(IUser sender, IMessage source, String args) throws Exception {
-        answerWarn(source, core.translate(source.getGuild(), sender, "bot.exit"));
+        core.sendWarn(source, core.langs.translate(source, "bot.exit"));
         core.disableBot();
     }
 
     @Override
     public void executeNo(IUser sender, IMessage source, String args) throws Exception {
-        answerDone(source, core.translate(source.getGuild(), sender, "bot.exit.canceled"));
+        core.sendDone(source, core.langs.translate(source, "bot.exit.canceled"));
     }
 
     @Override

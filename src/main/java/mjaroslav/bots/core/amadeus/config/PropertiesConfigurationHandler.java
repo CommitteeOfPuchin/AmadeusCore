@@ -120,7 +120,7 @@ public abstract class PropertiesConfigurationHandler extends ConfigurationHandle
         return defaultValue;
     }
 
-    public float getString(String key, float defaultValue) {
+    public float getFloat(String key, float defaultValue) {
         if (map.containsKey(key))
             return map.get(key).getFloat();
         else {
@@ -324,7 +324,7 @@ public abstract class PropertiesConfigurationHandler extends ConfigurationHandle
         }
 
         public String[] getStringList() {
-            return value.split("|");
+            return value.split("\\|");
         }
 
         public int[] getIntList() {

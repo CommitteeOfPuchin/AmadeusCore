@@ -19,41 +19,35 @@ public class CommandBotInfo extends BaseCommand {
         StringBuilder answer = new StringBuilder();
         ArrayList<String> argsParsed = AmadeusUtils.parseArgsToArray(args);
         if (!argsParsed.isEmpty()) {
-            if (hasArgAt("discord", 0, argsParsed, source.getChannel() != null ? source.getChannel().getGuild() : null,
-                    sender)) {
-                if (hasArgAt("perms", 1, argsParsed,
-                        source.getChannel() != null ? source.getChannel().getGuild() : null, sender)) {
-                    if (hasArgAt("list", 2, argsParsed,
-                            source.getChannel() != null ? source.getChannel().getGuild() : null, sender))
+            if (hasArgAt(source, "discord", 0, argsParsed)) {
+                if (hasArgAt(source, "perms", 1, argsParsed)) {
+                    if (hasArgAt(source, "list", 2, argsParsed))
                         for (Permissions permission : Permissions.values())
                             answer.append("`" + permission.name() + "` ");
                     else {
-                        for (Permissions permission : core.getClient().getOurUser()
+                        for (Permissions permission : core.client.getOurUser()
                                 .getPermissionsForGuild(source.getGuild()))
                             answer.append("`" + permission.name() + "` ");
                     }
-                } else if (hasArgAt("emoji", 1, argsParsed,
-                        source.getChannel() != null ? source.getChannel().getGuild() : null, sender)) {
+                } else if (hasArgAt(source, "emoji", 1, argsParsed)) {
                     long id = source.getGuild().getLongID();
                     if (argsParsed.size() > 2)
                         id = Long.parseLong(argsParsed.get(2));
-                    for (IEmoji emoji : core.getClient().getGuildByID(id).getEmojis())
+                    for (IEmoji emoji : core.client.getGuildByID(id).getEmojis())
                         if (!emoji.isAnimated())
                             answer.append("<:" + emoji.getName() + ":" + emoji.getStringID() + "> ");
-                } else if (hasArgAt("roles", 1, argsParsed,
-                        source.getChannel() != null ? source.getChannel().getGuild() : null, sender)) {
-                    if (hasArgAt("list", 2, argsParsed,
-                            source.getChannel() != null ? source.getChannel().getGuild() : null, sender))
+                } else if (hasArgAt(source, "roles", 1, argsParsed)) {
+                    if (hasArgAt(source, "list", 2, argsParsed))
                         for (IRole role : source.getGuild().getRoles())
                             answer.append(role.getName() + " - " + role.getLongID() + "\n");
                     else {
-                        for (IRole role : core.getClient().getOurUser().getRolesForGuild(source.getGuild()))
+                        for (IRole role : core.client.getOurUser().getRolesForGuild(source.getGuild()))
                             answer.append(role.getName() + " - " + role.getLongID() + "\n");
                     }
                 }
             }
         }
-        answerDone(source, answer.toString());
+        core.sendDone(source, answer.toString());
     }
 
     @Override

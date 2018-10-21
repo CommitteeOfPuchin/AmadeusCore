@@ -33,32 +33,24 @@ public class DefaultCommandHandler extends CommandHandler {
 
     @Override
     public boolean executeCommand(MessageReceivedEvent event) {
+        core.loadConfigs();
         String text = event.getMessage().getContent();
-        String commandString = AmadeusUtils.removePreifx(text, core, core.langs.getPrefixes(
-                event.getChannel() != null ? event.getChannel().getGuild() : null, event.getAuthor()), false);
+        String commandString = AmadeusUtils.removePreifx(text, core, core.optionPrefixes, false);
         if (text.length() > commandString.length()) {
-            BaseCommand command = getCommand(event.getChannel() != null ? event.getChannel().getGuild() : null,
-                    event.getAuthor(), commandString);
+            BaseCommand command = getCommand(event.getGuild(), event.getAuthor(), commandString);
             if (command != null) {
                 String args = AmadeusUtils.removePreifx(commandString, core,
-                        core.langs.getNames(event.getChannel() != null ? event.getChannel().getGuild() : null,
-                                event.getAuthor(), name + "." + command.name),
-                        false);
+                        core.langs.getNames(event.getMessage(), command), false);
                 try {
-                    if (core.permissions.canUseCommand(event.getGuild(), event.getAuthor(), command, null))
+                    if (core.permissions.canUseCommand(event.getGuild(), event.getAuthor(), command, null)) {
                         command.execute(event.getAuthor(), event.getMessage(), args);
-                    else {
-                        core.sendError(
-                                event.getChannel() != null ? event.getChannel().getLongID()
-                                        : event.getAuthor().getLongID(),
-                                core.translate(event.getGuild(), event.getAuthor(), "perms.nohave",
-                                        command.getCommandPermission()));
+                    } else {
+                        core.sendError(event.getMessage(), core.langs.translate(event.getMessage(), "perms.nohave",
+                                command.getCommandPermission()));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    core.sendError(
-                            event.getChannel() != null ? event.getChannel().getLongID() : event.getAuthor().getLongID(),
-                            e);
+                    core.sendError(event.getMessage(), e);
                 }
                 return true;
             }
@@ -69,7 +61,7 @@ public class DefaultCommandHandler extends CommandHandler {
     @Override
     public BaseCommand getCommand(IGuild guild, IUser user, String text) {
         for (BaseCommand command : getCommandList())
-            for (String name : core.langs.getNames(guild, user, command.name)) {
+            for (String name : core.langs.getNames(guild, user, command)) {
                 if (text.toLowerCase().startsWith(name) && (text.toLowerCase().replaceFirst(name, "").startsWith(" ")
                         || text.toLowerCase().replaceFirst(name, "").equals(""))) {
                     return command;

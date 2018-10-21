@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +21,6 @@ public class I18n {
 
     public static final HashMap<String, String> EMPTYMAP_LANG = new HashMap<>();
     public static final HashMap<String, List<String>> EMPTYMAP_COMMANDS = new HashMap<>();
-    public static final List<String> DEFAULT_PREFIXES = Arrays.asList("execute");
 
     public static final String KEY_TRANSLATED_NAME = "translated_name";
     public static final String KEY_FLAG_EMOJI = "flag_emoji";
@@ -37,18 +35,6 @@ public class I18n {
         FOLDER = FileHelper.folderLanguages(core).toFile();
     }
 
-    public List<String> getPrefixes(String lang) {
-        ArrayList<String> result = new ArrayList<String>(getPrefixes());
-        result.addAll(
-                STORAGE_COMMANDS.getOrDefault(lang, EMPTYMAP_COMMANDS).getOrDefault("prefix", Collections.emptyList()));
-        return result;
-    }
-
-    public List<String> getPrefixes() {
-        return new ArrayList<String>(
-                STORAGE_COMMANDS.getOrDefault(defaultLang, EMPTYMAP_COMMANDS).getOrDefault("prefix", DEFAULT_PREFIXES));
-    }
-
     @SuppressWarnings("unchecked")
     public void loadLangs() {
         STORAGE_LANGS.clear();
@@ -59,8 +45,8 @@ public class I18n {
                 STORAGE_COMMANDS.put(langName, new HashMap<>());
             if (AmadeusUtils.existsOrCreateFile(FileHelper.fileLanguageCommands(core, langName)))
                 try {
-                    STORAGE_COMMANDS.putAll(JSONUtils.fromJson(FileHelper.fileLanguageCommands(core, langName),
-                            STORAGE_COMMANDS.getClass()));
+                    STORAGE_COMMANDS.put(langName, JSONUtils.fromJson(FileHelper.fileLanguageCommands(core, langName),
+                            EMPTYMAP_COMMANDS.getClass()));
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -90,7 +76,7 @@ public class I18n {
         }
     }
 
-    public List<String> getNames(String key) {
+    public List<String> getNamesCustom(String key) {
         ArrayList<String> result = new ArrayList<String>();
         result.add(key);
         result.addAll(STORAGE_COMMANDS.getOrDefault(defaultLang, EMPTYMAP_COMMANDS).getOrDefault(key,
@@ -99,27 +85,44 @@ public class I18n {
         return result;
     }
 
-    public List<String> getNames(String lang, String key) {
-        ArrayList<String> result = new ArrayList<String>(getNames(key));
+    public List<String> getNamesCustom(String lang, String key) {
+        ArrayList<String> result = new ArrayList<String>(getNamesCustom(key));
         result.addAll(
                 STORAGE_COMMANDS.getOrDefault(lang, EMPTYMAP_COMMANDS).getOrDefault(key, Collections.emptyList()));
         result.sort(AmadeusUtils.LENGTH_SORTER);
         return result;
     }
 
-    public List<String> getNamesArg(String commandKey, String argKey) {
+    public List<String> getNames(String handlerKey, String commandKey) {
         ArrayList<String> result = new ArrayList<String>();
-        result.add(argKey);
+        result.add(commandKey);
         result.addAll(STORAGE_COMMANDS.getOrDefault(defaultLang, EMPTYMAP_COMMANDS)
-                .getOrDefault(commandKey + "." + argKey, Collections.emptyList()));
+                .getOrDefault(handlerKey + "." + commandKey, Collections.emptyList()));
         result.sort(AmadeusUtils.LENGTH_SORTER);
         return result;
     }
 
-    public List<String> getNamesArg(String lang, String commandKey, String argKey) {
-        ArrayList<String> result = new ArrayList<String>(getNamesArg(commandKey, argKey));
-        result.addAll(STORAGE_COMMANDS.getOrDefault(lang, EMPTYMAP_COMMANDS).getOrDefault(commandKey + "." + argKey,
+    public List<String> getNames(String lang, String handlerKey, String commandKey) {
+        ArrayList<String> result = new ArrayList<String>(getNames(handlerKey, commandKey));
+        result.addAll(STORAGE_COMMANDS.getOrDefault(lang, EMPTYMAP_COMMANDS).getOrDefault(handlerKey + "." + commandKey,
                 Collections.emptyList()));
+        result.sort(AmadeusUtils.LENGTH_SORTER);
+        return result;
+    }
+
+    public List<String> getNamesArg(String handlerKey, String commandKey, String argKey) {
+        ArrayList<String> result = new ArrayList<String>();
+        result.add(argKey);
+        result.addAll(STORAGE_COMMANDS.getOrDefault(defaultLang, EMPTYMAP_COMMANDS)
+                .getOrDefault(handlerKey + "." + commandKey + "." + argKey, Collections.emptyList()));
+        result.sort(AmadeusUtils.LENGTH_SORTER);
+        return result;
+    }
+
+    public List<String> getNamesArg(String lang, String handlerKey, String commandKey, String argKey) {
+        ArrayList<String> result = new ArrayList<String>(getNamesArg(handlerKey, commandKey, argKey));
+        result.addAll(STORAGE_COMMANDS.getOrDefault(lang, EMPTYMAP_COMMANDS)
+                .getOrDefault(handlerKey + "." + commandKey + "." + argKey, Collections.emptyList()));
         result.sort(AmadeusUtils.LENGTH_SORTER);
         return result;
     }

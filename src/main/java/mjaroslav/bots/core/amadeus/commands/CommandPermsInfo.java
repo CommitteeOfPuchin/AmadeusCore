@@ -19,24 +19,37 @@ public class CommandPermsInfo extends BaseCommand {
         StringBuilder answer = new StringBuilder();
         ArrayList<String> argsParsed = AmadeusUtils.parseArgsToArray(args);
         if (argsParsed.isEmpty()) {
-            answer.append(core.translate(source.getGuild(), sender, "permsinfo.perms") + "\n");
+            answer.append(core.langs.translate(source, "permsinfo.perms") + "\n");
             for (String perm : core.permissions.getPermissions(source.getGuild(), sender))
                 answer.append("`" + perm + "` ");
-        } else if (hasArg("discord", argsParsed, source.getChannel() != null ? source.getChannel().getGuild() : null,
-                sender)) {
+        } else if (hasArg(source, "user", argsParsed)) {
+            try {
+                long id = Long.parseLong(argValue(source, "user", argsParsed));
+                answer.append(core.langs.translate(source, "permsinfo.perms") + "\n");
+                for (String perm : core.permissions.getPermissions(source.getGuild(), core.client.getUserByID(id)))
+                    answer.append("`" + perm + "` ");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (hasArg(source, "discord", argsParsed)) {
             if (source.getChannel() != null) {
                 long id = sender.getLongID();
+                boolean flag = false;
                 try {
-                    id = Long.parseLong(argValue("discord", argsParsed,
-                            source.getChannel() != null ? source.getChannel().getGuild() : null, sender));
+                    flag = true;
+                    id = Long.parseLong(argValue(source, "discord", argsParsed));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                EnumSet<Permissions> permissions = core.getClient().getUserByID(id)
+                EnumSet<Permissions> permissions = core.client.getUserByID(id)
                         .getPermissionsForGuild(source.getChannel().getGuild());
-                answer.append(core.translate(source.getGuild(), sender, "permsinfo.perms"));
-                EmbedBuilder builder = new EmbedBuilder().withDesc(answer.toString()).withTitle(String
-                        .format(":white_check_mark: %s", core.translate(source.getGuild(), sender, "answer.done")))
+                if (flag)
+                    answer.append(core.langs.translate(source, "permsinfo.permsuser",
+                            core.client.getUserByID(id).mention(true)));
+                else
+                    answer.append(core.langs.translate(source, "permsinfo.perms"));
+                EmbedBuilder builder = new EmbedBuilder().withDesc(answer.toString())
+                        .withTitle(String.format(":white_check_mark: %s", core.langs.translate(source, "answer.done")))
                         .withColor(0x00FF00);
                 StringBuilder available = new StringBuilder();
                 StringBuilder unavailable = new StringBuilder();
@@ -47,17 +60,16 @@ public class CommandPermsInfo extends BaseCommand {
                         unavailable.append(":no_entry_sign: " + permission.name() + "\n");
                 }
                 if (available.toString().isEmpty())
-                    available.append(":warning: " + core.translate(source.getGuild(), sender, "permsinfo.empty"));
+                    available.append(":warning: " + core.langs.translate(source, "permsinfo.empty"));
                 if (unavailable.toString().isEmpty())
-                    unavailable.append(":warning: " + core.translate(source.getGuild(), sender, "permsinfo.empty"));
-                builder.appendField(core.translate(source.getGuild(), sender, "permsinfo.available"),
-                        available.toString(), true);
-                builder.appendField(core.translate(source.getGuild(), sender, "permsinfo.unavailable"),
-                        unavailable.toString(), true);
-                answer(source, "", builder.build());
+                    unavailable.append(":warning: " + core.langs.translate(source, "permsinfo.empty"));
+                builder.appendField(core.langs.translate(source, "permsinfo.available"), available.toString(), true);
+                builder.appendField(core.langs.translate(source, "permsinfo.unavailable"), unavailable.toString(),
+                        true);
+                core.answerMessage(source, builder.build());
                 return;
             }
         }
-        answerDone(source, answer.toString());
+        core.sendDone(source, answer.toString());
     }
 }

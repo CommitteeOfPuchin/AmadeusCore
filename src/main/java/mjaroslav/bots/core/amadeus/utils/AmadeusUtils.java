@@ -8,6 +8,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import org.apache.commons.io.FilenameUtils;
 import mjaroslav.bots.core.amadeus.AmadeusCore;
+import mjaroslav.bots.core.amadeus.lib.BotInfo;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.IMessage.Attachment;
 
 public class AmadeusUtils {
     public static final Comparator<String> LENGTH_SORTER = new Comparator<String>() {
@@ -16,6 +19,53 @@ public class AmadeusUtils {
             return o2.length() - o1.length();
         }
     };
+
+    public static BotInfo getBotInfo(AmadeusCore core) {
+        try {
+            BotInfo result = JSONUtils.fromJson(AmadeusUtils.class.getResourceAsStream("/bot.info"), BotInfo.class);
+            result.core = core;
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String formatChatLog(AmadeusCore core, MessageReceivedEvent event) {
+        String result = core.optionChatLogFormat;
+        result = result.replace("{messageId}", String.valueOf(event.getMessageID())).replace("{messageIdLn}",
+                String.valueOf(event.getMessageID() + "\n"));
+        if (!core.isPrivateMessage(event.getMessage())) {
+            result = result.replace("{guild}", event.getGuild().getName() + " (" + event.getGuild().getLongID() + ")")
+                    .replace("{guildLn}", event.getGuild().getName() + " (" + event.getGuild().getLongID() + ")\n");
+            result = result.replace("{channel}", event.getChannel().getName() + " (" + event.getChannel().getLongID())
+                    .replace("{channelLn}",
+                            event.getChannel().getName() + " (" + event.getChannel().getLongID() + "\n");
+        } else {
+            result = result.replace("{guild}", "").replace("{guildLn}", "");
+            result = result.replace("{channel}", "Private message").replace("{channelLn}", "Private message\n");
+        }
+        result = result
+                .replace("{user}",
+                        (core.isPrivateMessage(event.getMessage()) ? event.getAuthor().getName()
+                                : event.getAuthor().getDisplayName(event.getGuild())) + " ("
+                                + event.getAuthor().getLongID() + ")")
+                .replace("{userLn}",
+                        (core.isPrivateMessage(event.getMessage()) ? event.getAuthor().getName()
+                                : event.getAuthor().getDisplayName(event.getGuild())) + " ("
+                                + event.getAuthor().getLongID() + ")\n");
+        result = result.replace("{text}", event.getMessage().getContent()).replace("{textLn}",
+                event.getMessage().getContent() + "\n");
+        StringBuilder attachments = new StringBuilder();
+        for (int i = 0; i < event.getMessage().getAttachments().size(); i++) {
+            Attachment attachment = event.getMessage().getAttachments().get(i);
+            attachments.append(attachment.getFilename() + ":" + attachment.getFilesize() + " (" + attachment.getLongID()
+                    + ") = " + attachment.getUrl() + (i >= event.getMessage().getAttachments().size() - 1 ? "" : "\n"));
+        }
+        result = result.replace("{attachments}", attachments.toString()).replace("{attachmentsLn}",
+                attachments.toString() + "\n");
+        return result;
+    }
 
     public static boolean existsOrCreateFolder(File folder) {
         return (folder.exists() && folder.isDirectory()) || folder.mkdirs();
@@ -181,13 +231,14 @@ public class AmadeusUtils {
     }
 
     public static String removePreifx(String text, AmadeusCore core, Iterable<String> prefixes, boolean checkSpace) {
-        if (text.startsWith("<@" + core.getClient().getOurUser().getLongID() + ">")
-                || text.startsWith("<@!" + core.getClient().getOurUser().getLongID() + ">"))
+        if (text.startsWith("<@" + core.client.getOurUser().getLongID() + ">")
+                || text.startsWith("<@!" + core.client.getOurUser().getLongID() + ">"))
             return text.substring(text.indexOf(">") + 1).trim();
         for (String prefix : prefixes) {
-            if (text.toLowerCase().startsWith(prefix))
+            if (text.toLowerCase().startsWith(prefix)) {
                 if (!checkSpace || text.substring(prefix.length()).startsWith(" "))
                     return text.substring(prefix.length()).trim();
+            }
         }
         return text;
     }

@@ -27,7 +27,7 @@ public class JSONUtils {
     public static String toJson(Object oject, boolean pretty) {
         return pretty ? gsonPretty.toJson(oject) : gson.toJson(oject);
     }
-
+    
     public static <T> T fromJson(File file, Class<T> clazz) throws IOException {
         Reader reader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8);
         T result = gson.fromJson(reader, clazz);

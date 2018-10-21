@@ -17,29 +17,29 @@ public abstract class BaseCommandDialogYesNo extends BaseCommand {
     @Override
     public final void execute(IUser sender, IMessage source, String args) throws Exception {
         if (!cache.containsKey(source.getAuthor().getLongID())) {
-            if (isForce(args, source.getChannel() != null ? source.getChannel().getGuild() : null, sender))
+            if (isForce(source, args))
                 executeYes(sender, source, args);
             else {
                 cache.put(source.getAuthor().getLongID(), args);
-                answerWarn(source, core.translate(source.getGuild(), sender, "answer.dialogyesno"));
+                core.sendWarn(source, core.langs.translate(source, "answer.dialogyesno"));
             }
             return;
         }
         List<String> argsParsed = AmadeusUtils.parseArgsToArray(args);
-        if (isYes(argsParsed.get(0), source.getChannel() != null ? source.getChannel().getGuild() : null, sender)) {
+        if (isYes(source, argsParsed.get(0))) {
             if (cache.containsKey(source.getAuthor().getLongID())) {
                 String temp = cache.get(source.getAuthor().getLongID());
                 cache.remove(source.getAuthor().getLongID());
                 executeYes(sender, source, temp);
             } else
-                answerError(source, core.translate(source.getGuild(), sender, "answer.dialowyesno.noneed"));
+                core.sendError(source, core.langs.translate(source, "answer.dialowyesno.noneed"));
         } else {
             if (cache.containsKey(source.getAuthor().getLongID())) {
                 String temp = cache.get(source.getAuthor().getLongID());
                 cache.remove(source.getAuthor().getLongID());
                 executeNo(sender, source, temp);
             } else
-                answerError(source, core.translate(source.getGuild(), sender, "answer.dialowyesno.noneed"));
+                core.sendError(source, core.langs.translate(source, "answer.dialowyesno.noneed"));
         }
     }
 

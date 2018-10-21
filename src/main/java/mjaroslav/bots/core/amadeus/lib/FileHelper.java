@@ -15,10 +15,6 @@ public class FileHelper {
     public static final FilenameFilter LANGEXTFILTER = AmadeusUtils.getFilenameExtFilter(EXT_LANG);
     public static final FilenameFilter ROLEEXTFILTER = AmadeusUtils.getFilenameExtFilter(EXT_ROLE);
 
-    public static File fileBotInfo() {
-        return new File("bot.info");
-    }
-
     public static File fileBotToken() {
         return new File("bot.token");
     }
