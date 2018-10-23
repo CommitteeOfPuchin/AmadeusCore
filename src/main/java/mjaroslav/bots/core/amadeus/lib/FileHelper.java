@@ -31,14 +31,6 @@ public class FileHelper {
         return folderBot(core).resolve("permissions");
     }
 
-    public static Path folderPermissionsGuild(AmadeusCore core, long guildId) {
-        return folderPermissions(core).resolve(String.valueOf(guildId));
-    }
-
-    public static Path folderPermissionsPrivate(AmadeusCore core) {
-        return folderPermissions(core).resolve("private");
-    }
-
     public static Path folderLanguages(AmadeusCore core) {
         return folderBot(core).resolve("languages");
     }
@@ -51,24 +43,20 @@ public class FileHelper {
         return folderDatabases(core).resolve(name + ".db").toFile();
     }
 
-    public static File filePermissionsDatabase(AmadeusCore core, long guildId) {
-        return folderPermissionsGuild(core, guildId).resolve("permissions.db").toFile();
+    public static File filePermissionsDatabase(AmadeusCore core) {
+        return folderDatabases(core).resolve("permissions.db").toFile();
     }
 
-    public static File filePermissionsRole(AmadeusCore core, long guildId, String name) {
-        return folderPermissionsGuild(core, guildId).resolve(name + "." + EXT_ROLE).toFile();
+    public static File filePermissionsRole(AmadeusCore core, long guildId) {
+        return folderPermissions(core).resolve(guildId + "." + EXT_ROLE).toFile();
     }
 
-    public static File filePermissionsDatabasePrivate(AmadeusCore core) {
-        return folderPermissionsPrivate(core).resolve("permissions.db").toFile();
-    }
-
-    public static File filePermissionsRolePrivate(AmadeusCore core, String name) {
-        return folderPermissionsPrivate(core).resolve(name + "." + EXT_ROLE).toFile();
+    public static File filePermissionsRolePrivate(AmadeusCore core) {
+        return folderPermissions(core).resolve("private_messages." + EXT_ROLE).toFile();
     }
 
     public static File fileLanguagesDatabase(AmadeusCore core) {
-        return folderLanguages(core).resolve("storage." + EXT_DATABASE).toFile();
+        return folderDatabases(core).resolve("languages." + EXT_DATABASE).toFile();
     }
 
     public static File fileLanguageCommands(AmadeusCore core, String name) {

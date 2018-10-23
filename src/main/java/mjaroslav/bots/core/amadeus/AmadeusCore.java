@@ -57,7 +57,7 @@ public abstract class AmadeusCore {
     public boolean optionHideInvite = true;
     public boolean optionLogChat = true;
     public String optionChatLogFormat = "{guildLn}{channelLn}{userLn}{text}";
-    public List<String> optionPrefixes = Arrays.asList("execute");
+    public String optionMainPrefix = "execute";
 
     public final DefaultConfiguration DEFAULTCONFIG;
 
@@ -339,6 +339,16 @@ public abstract class AmadeusCore {
             client.logout();
     }
 
+    public static final List<String> DEFAULT_PERMISSIONS = Arrays.asList("default.help", "default.status", "default.permsinfo");
+    
+    public List<String> getDefaultPermissions() {
+        return DEFAULT_PERMISSIONS;
+    }
+    
+    public List<String> getDefaultPermissionsPrivate() {
+        return DEFAULT_PERMISSIONS;
+    }
+
     public void onReady() {}
 
     public static class EventHandler {
@@ -356,7 +366,8 @@ public abstract class AmadeusCore {
 
         @EventSubscriber
         public void onMessage(MessageReceivedEvent event) {
-            core.log.info(AmadeusUtils.formatChatLog(core, event));
+            if(core.optionLogChat)
+                core.log.info(AmadeusUtils.formatChatLog(core, event));
             for (CommandHandler commandHandler : core.listOfCommandHandlers())
                 if (commandHandler.executeCommand(event))
                     break;

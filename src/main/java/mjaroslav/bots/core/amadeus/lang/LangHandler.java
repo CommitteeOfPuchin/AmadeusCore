@@ -47,10 +47,28 @@ public class LangHandler {
         }
     }
 
+    public List<String> getPreifxes(IMessage message) {
+        List<String> result = core.i18n.getNamesCustom(getLang(message), "prefix");
+        result.add(core.optionMainPrefix);
+        return result;
+    }
+
+    public List<String> getPreifxes(IGuild guild, IUser user) {
+        List<String> result = core.i18n.getNamesCustom(getLang(guild, user), "prefix");
+        result.add(core.optionMainPrefix);
+        return result;
+    }
+
+    public List<String> getPreifxes(long guildId, long userId) {
+        List<String> result = core.i18n.getNamesCustom(getLang(guildId, userId), "prefix");
+        result.add(core.optionMainPrefix);
+        return result;
+    }
+
     public List<String> getNamesCustom(IMessage message, String key) {
         return core.i18n.getNamesCustom(getLang(message), key);
     }
-    
+
     public List<String> getNamesCustom(IGuild guild, IUser user, String key) {
         return core.i18n.getNamesCustom(getLang(guild, user), key);
     }

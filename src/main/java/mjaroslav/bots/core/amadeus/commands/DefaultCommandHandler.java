@@ -35,7 +35,7 @@ public class DefaultCommandHandler extends CommandHandler {
     public boolean executeCommand(MessageReceivedEvent event) {
         core.loadConfigs();
         String text = event.getMessage().getContent();
-        String commandString = AmadeusUtils.removePreifx(text, core, core.optionPrefixes, false);
+        String commandString = AmadeusUtils.removePreifx(text, core, core.langs.getPreifxes(event.getMessage()), false);
         if (text.length() > commandString.length()) {
             BaseCommand command = getCommand(event.getGuild(), event.getAuthor(), commandString);
             if (command != null) {
