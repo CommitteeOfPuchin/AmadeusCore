@@ -58,7 +58,13 @@ permissions_available=Available permissions
 permissions_unavailable=Unavailable permissions
 
 help_name=Help for: %s
-help_synonyms=**Command synonyms:**
+help_synonyms=**Synonyms:**
 help_args=**Command arguments:**
 help_commands=**Commands:**
-help_command_default_help=Use `handler=NAME` for handler command list.\nUse `handler=NAME command=NAME` for help for command of handler.\nUse `handler=NAME command=NAME arg=NAME` for help for argument of command of handler.
+help_handlers=**Handlers:**
+help_command_default_help_handler=Use `handler=NAME` for handler commands list.
+help_command_default_help_command=Use `handler=NAME command=NAME` for help for command of handler.
+help_command_default_help_arg=Use `handler=NAME command=NAME arg=NAME` for help for argument of command of handler.
+
+help_command_default_help=Use `handler=all` for handlers list.\nUse `handler=NAME` for handler commands list.\nUse `handler=NAME command=NAME` for help for command of handler.
+help_command_default_status=Display basic bot info and statistic.

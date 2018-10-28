@@ -58,7 +58,13 @@ permissions_available=Доступные
 permissions_unavailable=Недостыпные
 
 help_name=Помощь для: %s
-help_synonyms=**Синонимы команды:**
+help_synonyms=**Синонимы:**
 help_args=**Аргументы команды:**
 help_commands=**Список команд:**
-help_command_default_help=Используйте `handler=NAME` для списка команд обработчик.\nИспользуйте `handler=NAME command=NAME` для помощи для команды обработчика.\nИспользуйте `handler=NAME command=NAME arg=NAME` для помощи для аргумента команды обработчика.
+help_handlers=**Список обработчиков:**
+help_command_default_help_handler=Используйте `handler=NAME` для списка команд обработчика.
+help_command_default_help_command=Используйте `handler=NAME command=NAME` для помощи для команды обработчика.
+help_command_default_help_arg=Используйте `handler=NAME command=NAME arg=NAME` для помощи для аргумента команды обработчика.
+
+help_command_default_help=Используйте `handler=all` для списка обработчиков.\nИспользуйте `handler=NAME` для списка команд обработчика.\nИспользуйте `handler=NAME command=NAME` для помощи для команды обработчика.
+help_command_default_status=Показать базувую информацию и статистику бота.
