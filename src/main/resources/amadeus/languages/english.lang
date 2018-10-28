@@ -68,3 +68,7 @@ help_command_default_help_arg=Use `handler=NAME command=NAME arg=NAME` for help 
 
 help_command_default_help=Use `handler=all` for handlers list.\nUse `handler=NAME` for handler commands list.\nUse `handler=NAME command=NAME` for help for command of handler.
 help_command_default_status=Display basic bot info and statistic.
+help_command_default_langs=Setting the localication of the bot. No arguments displays the current language.
+help_command_default_langs_list=List languages.
+help_command_default_langs_set=Set selected language to yourself.
+help_command_default_langs_set_guild=Set selected language to guild.

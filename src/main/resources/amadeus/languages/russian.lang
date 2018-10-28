@@ -68,3 +68,7 @@ help_command_default_help_arg=Используйте `handler=NAME command=NAME 
 
 help_command_default_help=Используйте `handler=all` для списка обработчиков.\nИспользуйте `handler=NAME` для списка команд обработчика.\nИспользуйте `handler=NAME command=NAME` для помощи для команды обработчика.
 help_command_default_status=Показать базувую информацию и статистику бота.
+help_command_default_langs=Работа с локализацией бота. Ввод без аргументов выведет текущий язык.
+help_command_default_langs_list=Вывести список языков.
+help_command_default_langs_set=Установить себе выбранный язык.
+help_command_default_langs_set_guild=Установить выбранный язык на весь сервер.
