@@ -1,0 +1,64 @@
+translated_name=Русский
+flag_emoji=:flag_ru:
+
+list_empty=Список пуст!
+
+answer_done=Выполнено
+answer_warn=Внимание
+answer_error=Ошибка
+answer_canceled=Отменено
+answer_sure=Вы уверены?
+answer_no_pm=Нельзя использовать в приватных сообщениях!
+answer_sure_noneed=Сначала введите команду!
+answer_no_permissions=Недостаточно прав!\nТребуется: `%s`.
+answer_bad_args=Ошибка в аргументах. Используйте команду помощи!
+answer_bag_guild=Сервер не найден!
+answer_bag_user=Пользователь не найден!
+answer_bag_role=Роль не найдена!
+answer_reloaded_all=Бот перезагружен.
+answer_reloaded_configs=Конфигурации перезагружены.
+answer_reloaded_perms=Права перезагружены.
+answer_reloaded_langs=Языки перезагружены.
+
+langs_current=**Текущий язык:** %s
+langs_list=**Доступные языки:**
+langs_not_found=Язык (%s) не найден!
+langs_set=Язык (%s) установлен!
+langs_set_guild=Язык (%s) установлен для %s!
+
+bot_ready=Бот готов
+bot_reloaded=Бот перезагружен
+bot_stopping=Остановка бота!
+bot_amadeus_version=Версия Амадея
+bot_version=Версия бота
+bot_description=Описание
+bot_credits=Благодарности
+bot_source=Исходный код
+bot_site=Сайт
+bot_devs=Разработчики
+
+status_guilds=Сервера: %s
+status_users=Пользователи: %s
+status_channels=Каналы: %s
+status_discord=Discord статистика
+status_handlers=Обработчики: %s
+status_commands=Команды: %s
+status_databases=Базы данных: %s
+status_langs=Языки: %s
+status_configs=Конфигураций: %s
+status_bot=Статистика бота
+status_memory=Памяти использовано
+# ЗАНЯТО | МАКСИМУМ | ПРОЦЕНТ
+status_memory_value=%.2fMB/%.2fMB (%s)
+status_invite=Ссылка-приглашение
+
+permissions_my=**Ваши права:**
+permissions_user=**Права пользователя %s:**
+permissions_available=Доступные
+permissions_unavailable=Недостыпные
+
+help_name=Помощь для: %s
+help_synonyms=**Синонимы команды:**
+help_args=**Аргументы команды:**
+help_commands=**Список команд:**
+help_command_default_help=Используйте `handler=NAME` для списка команд обработчик.\nИспользуйте `handler=NAME command=NAME` для помощи для команды обработчика.\nИспользуйте `handler=NAME command=NAME arg=NAME` для помощи для аргумента команды обработчика.

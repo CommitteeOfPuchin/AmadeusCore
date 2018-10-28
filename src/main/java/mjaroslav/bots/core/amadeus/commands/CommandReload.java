@@ -7,33 +7,32 @@ import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
-public class CommandReload extends BaseCommandDialogYesNo {
+public class CommandReload extends BaseCommandDialogSure {
     public CommandReload(AmadeusCore core, CommandHandler handler) {
         super(core, handler, "reload");
     }
 
     @Override
-    public void executeYes(IUser sender, IMessage source, String args) throws Exception {
+    public void executeConfirmed(IUser sender, IMessage source, String args) throws Exception {
         List<String> argsParsed = AmadeusUtils.parseArgsToArray(args);
-        if (!argsParsed.isEmpty() && argIndex(source, "all", argsParsed) != 0) {
+        if (!argsParsed.isEmpty()) {
+            if (isAll(source, argsParsed.get(0))) {
+                core.loadAll();
+                core.sendDone(source, core.langs.translate(source, "answer_reloaded_all"));
+            } else
             if (argIndex(source, "configs", argsParsed) == 0) {
                 core.loadConfigs();
+                core.sendDone(source, core.langs.translate(source, "answer_reloaded_configs"));
             } else if (argIndex(source, "perms", argsParsed) == 0) {
                 core.loadPerms();
+                core.sendDone(source, core.langs.translate(source, "answer_reloaded_langs"));
             } else if (argIndex(source, "langs", argsParsed) == 0) {
                 core.loadLangs();
-                core.sendDone(source, core.langs.translate(source, "done.reload.langs"));
+                core.sendDone(source, core.langs.translate(source, "answer_reloaded_langs"));
             } else
-                core.sendError(source, core.langs.translate(source, "error.badargs"));
-        } else {
-            core.loadAll();
-            core.sendDone(source, core.langs.translate(source, "done.reload.all"));
-        }
-    }
-
-    @Override
-    public void executeNo(IUser sender, IMessage source, String args) throws Exception {
-        core.sendDone(source, "Reloading canceled");
+                core.sendError(source, core.langs.translate(source, "answer_bad_args"));
+        } else
+            core.sendError(source, core.langs.translate(source, "answer_bad_args"));
     }
 
     @Override

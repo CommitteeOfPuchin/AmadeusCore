@@ -30,10 +30,10 @@ public class LangHandler {
 
     public void loadDatabase() {
         database.executeUpdate("CREATE TABLE IF NOT EXISTS users(userId INTEGER UNIQUE, lang VARCHAR NOT NULL DEFAULT '"
-                + I18n.defaultLang + "', comment VARCHAR(30))");
+                + I18n.defaultLang + "')");
         database.executeUpdate(
                 "CREATE TABLE IF NOT EXISTS guilds(guildId INTEGER UNIQUE, lang VARCHAR NOT NULL DEFAULT '"
-                        + I18n.defaultLang + "', comment VARCHAR(30))");
+                        + I18n.defaultLang + "')");
         USERS.clear();
         try {
             ResultSet result = database.executeQuery("SELECT userId, lang FROM users");
@@ -156,27 +156,39 @@ public class LangHandler {
 
     public void setLangToGuild(long guildId, String key) {
         database.executeUpdate("DELETE FROM guilds WHERE guildId = " + guildId);
-        if (!key.equals(I18n.defaultLang))
-            database.executeUpdate(String.format("INSERT INTO guilds(guildId, lang) VALUES(%s, %s)", guildId, key));
+        GUILDS.remove(guildId);
+        if (!key.equals(I18n.defaultLang)) {
+            database.executeUpdate(String.format("INSERT INTO guilds(guildId, lang) VALUES(%s, '%s')", guildId, key));
+            GUILDS.put(guildId, key);
+        }
     }
 
     public void setLangToGuild(IGuild guild, String key) {
         database.executeUpdate("DELETE FROM guilds WHERE guildId = " + guild.getLongID());
-        if (!key.equals(I18n.defaultLang))
-            database.executeUpdate(String.format("INSERT INTO guilds(guildId, lang, comment) VALUES(%s, %s, %s)",
-                    guild.getLongID(), key, guild.getName()));
+        GUILDS.remove(guild.getLongID());
+        if (!key.equals(I18n.defaultLang)) {
+            database.executeUpdate(
+                    String.format("INSERT INTO guilds(guildId, lang) VALUES(%s, '%s')", guild.getLongID(), key));
+            GUILDS.put(guild.getLongID(), key);
+        }
     }
 
     public void setLangToUser(long userId, String key) {
         database.executeUpdate("DELETE FROM users WHERE userId = " + userId);
-        if (!key.equals(I18n.defaultLang))
-            database.executeUpdate(String.format("INSERT INTO users(userId, lang) VALUES(%s, %s)", userId, key));
+        USERS.remove(userId);
+        if (!key.equals(I18n.defaultLang)) {
+            USERS.put(userId, key);
+            database.executeUpdate(String.format("INSERT INTO users(userId, lang) VALUES(%s, '%s')", userId, key));
+        }
     }
 
     public void setLangToUser(IUser user, String key) {
         database.executeUpdate("DELETE FROM users WHERE userId = " + user.getLongID());
-        if (!key.equals(I18n.defaultLang))
-            database.executeUpdate(String.format("INSERT INTO users(userId, lang, comment) VALUES(%s, %s, %s)",
-                    user.getLongID(), key, user.getName()));
+        USERS.remove(user.getLongID());
+        if (!key.equals(I18n.defaultLang)) {
+            database.executeUpdate(
+                    String.format("INSERT INTO users(userId, lang) VALUES(%s, '%s')", user.getLongID(), key));
+            USERS.put(user.getLongID(), key);
+        }
     }
 }

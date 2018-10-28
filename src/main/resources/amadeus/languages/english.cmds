@@ -1,0 +1,88 @@
+yes
+-- true
+-- sure
+
+no
+-- false
+-- cancel
+
+force
+-- -f
+
+default.help
+-- h
+default.help.command
+-- cmd
+-- c
+default.help.handler
+-- hdlr
+-- h
+default.help.arg
+-- argument
+-- a
+
+default.info
+-- information
+-- i
+default.info.discord
+-- dc
+-- disc
+default.info.discord.perms
+-- p
+-- permissions
+default.info.discord.roles
+-- r
+default.info.discord.emoji
+-- e
+
+default.langs
+-- languages
+-- language
+-- lang
+-- l
+-- locale
+default.langs.set
+-- -s
+-- s
+default.langs.set.guild
+-- server
+-- -g
+-- g
+default.langs.list
+-- -l
+-- l
+-- all
+
+default.permissions
+-- perms
+-- p
+-- rights
+default.permissions.user
+-- u
+default.permissions.discord
+-- dc
+-- disc
+default.permissions.discord.user
+-- u
+
+default.reload
+-- reboot
+default.reload.configs
+-- configurations
+-- c
+default.reload.langs
+-- languages
+-- l
+default.reload.perms
+-- permissions
+-- p
+
+default.status
+-- stats
+-- statistic
+
+default.stop
+-- exit
+-- disable
+-- s
+-- e

@@ -26,26 +26,28 @@ public class PermissionHandler {
     private final HashMap<Long, HashMap<String, String>> PERMISSIONS = new HashMap<>();
     private final HashMap<Long, PermissionInfo> PERMISSIONROLES = new HashMap<>();
     private final HashMap<Long, String> USERS_PRIVATE = new HashMap<>();
-    private final PermissionInfo PERMISSIONROLES_PRIVATE;
+    private final PermissionInfo PERMISSIONROLES_PRIVATE = new PermissionInfo();
 
     public final File FOLDER;
 
     public PermissionHandler(AmadeusCore core) {
         this.core = core;
-        PERMISSIONROLES_PRIVATE = new PermissionInfo(core.getDefaultPermissionsPrivate());
         FOLDER = FileHelper.folderPermissions(core).toFile();
         database = core.databases.getDatabaseOrAddSQLite("permissions", FileHelper.filePermissionsDatabase(core));
     }
 
     public void load() {
+        loadDatabase();
         PERMISSIONROLES.clear();
         for (IGuild guild : core.client.getGuilds()) {
-            PERMISSIONROLES.put(guild.getLongID(), new PermissionInfo(core.getDefaultPermissions()));
-            PERMISSIONROLES.get(guild.getLongID()).createFile(FileHelper.filePermissionsRole(core, guild.getLongID()));
+            PERMISSIONROLES.put(guild.getLongID(), new PermissionInfo());
+            if (PERMISSIONROLES.get(guild.getLongID()).createFile(true,
+                    FileHelper.filePermissions(core, guild.getLongID())))
+                setPermissionRoleToPermission(guild, Permissions.ADMINISTRATOR, "admin");
         }
-        PERMISSIONROLES_PRIVATE.createFile(FileHelper.filePermissionsRolePrivate(core));
+        PERMISSIONROLES_PRIVATE.createFile(false, FileHelper.filePermissionsPrivate(core));
         if (AmadeusUtils.existsOrCreateFolder(FOLDER))
-            for (File file : FOLDER.listFiles(FileHelper.ROLEEXTFILTER))
+            for (File file : FOLDER.listFiles(FileHelper.PRMS_EXT_FILTER))
                 try {
                     if (FilenameUtils.removeExtension(file.getName()).equals("private_messages"))
                         PERMISSIONROLES_PRIVATE.set(JSONUtils.fromJson(file, PermissionInfo.class));
@@ -55,7 +57,6 @@ public class PermissionHandler {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-        loadDatabase();
     }
 
     public void loadDatabase() {
@@ -106,6 +107,18 @@ public class PermissionHandler {
             return PERMISSIONROLES_PRIVATE.getPermission(role);
     }
 
+    public void setPermissionRoleToRole(IGuild guild, IRole role, String roleName) {
+        if (guild != null && role != null) {
+            if (!ROLES.containsKey(guild.getLongID()))
+                ROLES.put(guild.getLongID(), new HashMap<>());
+            ROLES.get(guild.getLongID()).put(role.getLongID(), roleName);
+            database.executeUpdate(
+                    "DELETE FROM roles WHERE guildId = " + guild.getLongID() + " AND roleId = " + role.getLongID());
+            database.executeUpdate("INSERT INTO roles(guildId, roleId, permissionRole) VALUES(" + guild.getLongID()
+                    + ", " + role.getLongID() + ", '" + roleName + "')");
+        }
+    }
+
     public String getPermissionRoleFromRole(IRole role) {
         if (role != null && ROLES.containsKey(role.getGuild().getLongID()))
             return ROLES.get(role.getGuild().getLongID()).getOrDefault(role.getLongID(), "default");
@@ -113,11 +126,35 @@ public class PermissionHandler {
             return "default";
     }
 
+    public void setPermissionRoleToPermission(IGuild guild, Permissions permission, String roleName) {
+        if (guild != null) {
+            if (!PERMISSIONS.containsKey(guild.getLongID()))
+                PERMISSIONS.put(guild.getLongID(), new HashMap<>());
+            PERMISSIONS.get(guild.getLongID()).put(permission.name(), roleName);
+            database.executeUpdate("DELETE FROM permissions WHERE guildId = " + guild.getLongID()
+                    + " AND permissionName = '" + permission.name() + "'");
+            database.executeUpdate("INSERT INTO permissions(guildId, permissionName, permissionRole) VALUES("
+                    + guild.getLongID() + ", '" + permission.name() + "', '" + roleName + "')");
+        }
+    }
+
     public String getPermissionRoleFromPermission(IGuild guild, Permissions permission) {
         if (guild != null && PERMISSIONS.containsKey(guild.getLongID()))
             return PERMISSIONS.get(guild.getLongID()).getOrDefault(permission.name(), "default");
         else
             return "default";
+    }
+
+    public void setPermissionRoleToUser(IGuild guild, IUser user, String roleName) {
+        if (guild != null && user != null) {
+            if (!USERS.containsKey(guild.getLongID()))
+                USERS.put(guild.getLongID(), new HashMap<>());
+            USERS.get(guild.getLongID()).put(user.getLongID(), roleName);
+            database.executeUpdate(
+                    "DELETE FROM users WHERE guildId = " + guild.getLongID() + " AND userId = " + user.getLongID());
+            database.executeUpdate("INSERT INTO users(guildId, userId, permissionRole) VALUES(" + guild.getLongID()
+                    + ", " + user.getLongID() + ", '" + roleName + "')");
+        }
     }
 
     public String getPermissionRoleFromUser(IGuild guild, IUser user) {

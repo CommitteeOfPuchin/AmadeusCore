@@ -7,8 +7,8 @@ import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
-public abstract class BaseCommandDialogYesNo extends BaseCommand {
-    public BaseCommandDialogYesNo(AmadeusCore core, CommandHandler handler, String name) {
+public abstract class BaseCommandDialogSure extends BaseCommand {
+    public BaseCommandDialogSure(AmadeusCore core, CommandHandler handler, String name) {
         super(core, handler, name);
     }
 
@@ -18,10 +18,10 @@ public abstract class BaseCommandDialogYesNo extends BaseCommand {
     public final void execute(IUser sender, IMessage source, String args) throws Exception {
         if (!cache.containsKey(source.getAuthor().getLongID())) {
             if (isForce(source, args))
-                executeYes(sender, source, args);
+                executeConfirmed(sender, source, args);
             else {
                 cache.put(source.getAuthor().getLongID(), args);
-                core.sendWarn(source, core.langs.translate(source, "answer.dialogyesno"));
+                core.sendWarn(source, core.langs.translate(source, "answer_sure"));
             }
             return;
         }
@@ -30,20 +30,17 @@ public abstract class BaseCommandDialogYesNo extends BaseCommand {
             if (cache.containsKey(source.getAuthor().getLongID())) {
                 String temp = cache.get(source.getAuthor().getLongID());
                 cache.remove(source.getAuthor().getLongID());
-                executeYes(sender, source, temp);
+                executeConfirmed(sender, source, temp);
             } else
-                core.sendError(source, core.langs.translate(source, "answer.dialowyesno.noneed"));
+                core.sendError(source, core.langs.translate(source, "answer_sure_noneed"));
         } else {
             if (cache.containsKey(source.getAuthor().getLongID())) {
-                String temp = cache.get(source.getAuthor().getLongID());
                 cache.remove(source.getAuthor().getLongID());
-                executeNo(sender, source, temp);
+                core.sendCanceled(source);
             } else
-                core.sendError(source, core.langs.translate(source, "answer.dialowyesno.noneed"));
+                core.sendError(source, core.langs.translate(source, "answer_sure_noneed"));
         }
     }
 
-    public abstract void executeYes(IUser sender, IMessage source, String args) throws Exception;
-
-    public abstract void executeNo(IUser sender, IMessage source, String args) throws Exception;
+    public abstract void executeConfirmed(IUser sender, IMessage source, String args) throws Exception;
 }

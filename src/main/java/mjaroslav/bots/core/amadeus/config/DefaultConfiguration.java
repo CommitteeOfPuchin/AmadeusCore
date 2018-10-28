@@ -9,10 +9,10 @@ public class DefaultConfiguration extends PropertiesConfigurationHandler {
 
     @Override
     public void afterLoad() throws Exception {
-        core.optionDevMode = getBoolean("devmode", false);
-        core.optionHideInvite = getBoolean("hideinvite", true);
-        core.optionLogChat = getBoolean("logchat", true);
-        core.optionChatLogFormat = getString("chatlogformat", "{guildLn}{channelLn}{userLn}{text}");
-        core.optionMainPrefix = getString("mainprefix", "execute");
+        core.optionDevMode = getBoolean("devMode", false);
+        core.optionHideInvite = getBoolean("hideInvite", true);
+        core.optionLogChat = getBoolean("logChat", false);
+        core.optionChatLogFormat = getString("chatLogFormat", "{guildLn}{channelLn}{userLn}{text}");
+        core.optionMainPrefix = getString("mainPrefix", "execute");
     }
 }

@@ -2,6 +2,7 @@ package mjaroslav.bots.core.amadeus.config;
 
 import java.io.File;
 import mjaroslav.bots.core.amadeus.AmadeusCore;
+import mjaroslav.bots.core.amadeus.lib.FileHelper;
 
 public abstract class ConfigurationHandler {
     public final AmadeusCore core;
@@ -27,6 +28,6 @@ public abstract class ConfigurationHandler {
     }
 
     public File getFolder() {
-        return core.info.getFolder().toPath().resolve("configurations").toFile();
+        return FileHelper.folderConfigurations(core).toFile();
     }
 }

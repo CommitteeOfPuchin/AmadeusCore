@@ -91,20 +91,28 @@ public abstract class BaseCommand {
 
     public String argValue(IMessage message, String arg, List<String> argsParsed) {
         int index = argIndex(message, arg, argsParsed);
-        if (index >= 0 && argsParsed.size() > index)
+        if (index >= 0 && argsParsed.size() > index + 1)
             return argsParsed.get(index + 1);
         return null;
     }
 
+    public boolean canUseArg(IMessage source, String argName) {
+        if (core.permissions.canUseCommand(source.getGuild(), source.getAuthor(), this, argName))
+            return true;
+        else {
+            core.sendError(source, core.langs.translate(source, "answer_no_permissions", getArgPermission(argName)));
+            return false;
+        }
+
+    }
+
     public String getHelpDesc(IMessage message) {
-        return core.langs.translate(message, "help." + name);
+        return core.langs.translate(message, "help_command_" + handler.name + "_" + name);
     }
 
     public String getHelpDesc(IMessage message, String args) {
-        String value = core.langs.translate(message, "help.noarg");
-        if (getArgsList().contains(args))
-            value = core.langs.translate(message, "help." + name + "." + args);
-        return value;
+        return core.langs.translate(message,
+                "help_command_" + handler.name + "_" + name + "_" + args.replace('.', '_'));
     }
 
     public List<String> getArgsList() {

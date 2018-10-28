@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import com.google.gson.annotations.SerializedName;
+import mjaroslav.bots.core.amadeus.lib.FileHelper;
 import mjaroslav.bots.core.amadeus.utils.JSONUtils;
 
 public class PermissionInfo {
@@ -15,13 +16,18 @@ public class PermissionInfo {
         roles.put("default", new PermissionRole(defaultRole));
     }
 
-    public void createFile(File file) {
+    public boolean createFile(boolean guild, File file) {
         try {
-            if (file.createNewFile())
-                JSONUtils.toJson(file, this, true);
+            if (file.createNewFile()) {
+                JSONUtils.toJson(file, JSONUtils.fromJson(
+                        guild ? FileHelper.streamPermissionsDefault() : FileHelper.streamPermissionsPrivateDefault(),
+                        PermissionInfo.class), true);
+                return true;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     @SerializedName("roles")

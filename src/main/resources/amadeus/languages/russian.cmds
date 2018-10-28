@@ -1,0 +1,103 @@
+all
+-- все
+-- всё
+
+yes
+-- да
+-- уверен
+
+no
+-- нет
+-- отмена
+
+force
+-- сразу
+
+default.help
+-- помощь
+default.help.command
+-- команда
+-- ком
+-- к
+default.help.handler
+-- обработчик
+-- о
+-- обр
+default.help.arg
+-- аргумент
+-- а
+
+default.info
+-- информация
+-- инфо
+-- и
+default.info.discord
+-- дискорд
+-- дс
+-- диск
+-- дк
+default.info.discord.perms
+-- п
+-- права
+default.info.discord.roles
+-- роли
+-- р
+default.info.discord.emoji
+-- эмодзи
+-- э
+
+default.langs
+-- языки
+-- язык
+-- локаль
+default.langs.set
+-- установить
+-- поставить
+-- применить
+default.langs.set.guild
+-- сервер
+-- с
+default.langs.list
+-- список
+-- все
+
+default.permissions
+-- права
+-- п
+-- разрешения
+default.permissions.user
+-- пользователь
+-- учатник
+-- п
+default.permissions.discord
+-- дискорд
+-- диск
+-- дс
+-- дк
+default.permissions.discord.user
+-- пользователь
+-- участник
+-- п
+
+default.reload
+-- перезагрузить
+default.reload.configs
+-- конфигурации
+-- конфиги
+-- к
+default.reload.langs
+-- языки
+-- я
+default.reload.perms
+-- права
+-- п
+
+default.status
+-- статистика
+-- статус
+
+default.stop
+-- выход
+-- стоп
+-- остановить
+-- с

@@ -1,0 +1,64 @@
+translated_name=English
+flag_emoji=:flag_gb:/:flag_us:
+
+list_empty=The list is empty!
+
+answer_done=Done
+answer_warn=Warning
+answer_error=Error
+answer_canceled=Canceled
+answer_sure=Are you sure?
+answer_no_pm=Cannot be used in private messages!
+answer_sure_noneed=First enter the command!
+answer_no_permissions=You don not have permissions!\nRequired: `%s`.
+answer_bad_args=Error in arguments. Use the help command!
+answer_bag_guild=Guild not found!
+answer_bag_user=User not found!
+answer_bag_role=Role not found!
+answer_reloaded_all=Bot are reloaded.
+answer_reloaded_configs=Configurations are reloaded.
+answer_reloaded_perms=Permissions are reloaded.
+answer_reloaded_langs=Languages are reloaded.
+
+langs_current=**Current lang:** %s
+langs_list=**Available languages:**
+langs_not_found=Lang (%s) not found!
+langs_set=Language (%s) is set!
+langs_set_guild=Language (%s) is set for %s!
+
+bot_ready=Bot ready
+bot_reloaded=Bot reloaded
+bot_stopping=Stopping bot!
+bot_amadeus_version=Amadeus version
+bot_version=Bot version
+bot_description=Description
+bot_credits=Credits
+bot_source=Source
+bot_site=Site
+bot_devs=Developers
+
+status_guilds=Guilds: %s
+status_users=Users: %s
+status_channels=Channels: %s
+status_discord=Discord stats
+status_handlers=Handlers: %s
+status_commands=Commands: %s
+status_databases=Databases: %s
+status_langs=Languages: %s
+status_configs=Configurations: %s
+status_bot=Bot stats
+status_memory=Memory used
+# CURRENT | MAX | PERCENT
+status_memory_value=%.2fMB/%.2fMB (%s)
+status_invite=Invite link
+
+permissions_my=**Your permissions:**
+permissions_user=**%s permissions:**
+permissions_available=Available permissions
+permissions_unavailable=Unavailable permissions
+
+help_name=Help for: %s
+help_synonyms=**Command synonyms:**
+help_args=**Command arguments:**
+help_commands=**Commands:**
+help_command_default_help=Use `handler=NAME` for handler command list.\nUse `handler=NAME command=NAME` for help for command of handler.\nUse `handler=NAME command=NAME arg=NAME` for help for argument of command of handler.

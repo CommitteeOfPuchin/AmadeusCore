@@ -21,9 +21,10 @@ public class DefaultCommandHandler extends CommandHandler {
         registerCommand(new CommandHelp(core, this));
         registerCommand(new CommandStatus(core, this));
         registerCommand(new CommandReload(core, this));
-        registerCommand(new CommandExit(core, this));
-        registerCommand(new CommandPermsInfo(core, this));
-        registerCommand(new CommandBotInfo(core, this));
+        registerCommand(new CommandStop(core, this));
+        registerCommand(new CommandPermissions(core, this));
+        registerCommand(new CommandInfo(core, this));
+        registerCommand(new CommandLangs(core, this));
     }
 
     @Override
@@ -45,8 +46,8 @@ public class DefaultCommandHandler extends CommandHandler {
                     if (core.permissions.canUseCommand(event.getGuild(), event.getAuthor(), command, null)) {
                         command.execute(event.getAuthor(), event.getMessage(), args);
                     } else {
-                        core.sendError(event.getMessage(), core.langs.translate(event.getMessage(), "perms.nohave",
-                                command.getCommandPermission()));
+                        core.sendError(event.getMessage(), core.langs.translate(event.getMessage(),
+                                "answer_no_permissions", command.getCommandPermission()));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -61,12 +62,10 @@ public class DefaultCommandHandler extends CommandHandler {
     @Override
     public BaseCommand getCommand(IGuild guild, IUser user, String text) {
         for (BaseCommand command : getCommandList())
-            for (String name : core.langs.getNames(guild, user, command)) {
+            for (String name : core.langs.getNames(guild, user, command))
                 if (text.toLowerCase().startsWith(name) && (text.toLowerCase().replaceFirst(name, "").startsWith(" ")
-                        || text.toLowerCase().replaceFirst(name, "").equals(""))) {
+                        || text.toLowerCase().replaceFirst(name, "").equals("")))
                     return command;
-                }
-            }
         return null;
     }
 

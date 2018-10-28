@@ -21,8 +21,6 @@ public class BotInfo {
     private String version;
     @SerializedName("source_url")
     private String sourceUrl;
-    @SerializedName("logo_url")
-    private String logoUrl;
     @SerializedName("bot_site")
     private String botSite;
     @SerializedName("credits")
@@ -85,14 +83,6 @@ public class BotInfo {
         return AmadeusUtils.stringIsNotEmpty(invite);
     }
 
-    public String getLogoUrl() {
-        return logoUrl;
-    }
-
-    public boolean hasLogoUrl() {
-        return AmadeusUtils.stringIsNotEmpty(logoUrl);
-    }
-
     public String getBotSite() {
         return botSite;
     }
@@ -112,26 +102,24 @@ public class BotInfo {
     public EmbedBuilder toEmbedBuilder(IGuild guild, IUser user) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.withAuthorName(References.LIB_NAME + " > " + getName());
-        builder.appendField(core.langs.translate(guild, user, "core.amadeusversion"), References.LIB_VERSION, true);
+        builder.appendField(core.langs.translate(guild, user, "bot_amadeus_version"), References.LIB_VERSION, true);
         if (hasVersion())
-            builder.appendField(core.langs.translate(guild, user, "core.botversion"), getVersion(), true);
+            builder.appendField(core.langs.translate(guild, user, "bot_version"), getVersion(), true);
         if (hasDescription())
-            builder.appendField(core.langs.translate(guild, user, "core.botdescription"), getDescription(), true);
+            builder.appendField(core.langs.translate(guild, user, "bot_description"), getDescription(), true);
         if (hasCredits())
-            builder.appendField(core.langs.translate(guild, user, "core.botcredits"), getCredits(), true);
+            builder.appendField(core.langs.translate(guild, user, "bot_credits"), getCredits(), true);
         if (hasSourceUrl())
-            builder.appendField(core.langs.translate(guild, user, "core.botsource"), getSourceUrl(), true);
+            builder.appendField(core.langs.translate(guild, user, "bot_source"), getSourceUrl(), true);
         if (hasBotSite())
-            builder.appendField(core.langs.translate(guild, user, "core.botsite"), getBotSite(), true);
+            builder.appendField(core.langs.translate(guild, user, "bot_site"), getBotSite(), true);
         StringBuilder sbuilder = new StringBuilder();
         for (long id : devIds) {
             IUser u = core.client.getUserByID(id);
             if (u != null)
                 sbuilder.append(u.mention(true) + " ");
         }
-        builder.appendField(core.langs.translate(guild, user, "core.devs"), sbuilder.toString().trim(), false);
-        builder.withThumbnail(
-                hasLogoUrl() ? getLogoUrl() : core.client.getOurUser().getAvatarURL().replace("webp", "png"));
+        builder.appendField(core.langs.translate(guild, user, "bot_devs"), sbuilder.toString().trim(), false);
         return builder;
     }
 

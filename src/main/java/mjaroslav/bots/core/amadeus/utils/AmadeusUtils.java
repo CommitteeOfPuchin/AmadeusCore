@@ -1,11 +1,16 @@
 package mjaroslav.bots.core.amadeus.utils;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.lib.BotInfo;
@@ -31,6 +36,63 @@ public class AmadeusUtils {
         return null;
     }
 
+    public static Map<String, List<String>> parseHashMapStringStringList(BufferedReader reader, String fromName,
+            boolean comments) throws IOException, IllegalArgumentException {
+        HashMap<String, List<String>> result = comments ? new LinkedHashMap<>() : new HashMap<>();
+        String line = reader.readLine();
+        int linePos = 0;
+        String key = null;
+        while (line != null) {
+            if (line.startsWith("#") || AmadeusUtils.stringIsEmpty(line)) {
+                if (comments)
+                    result.put("#" + linePos, new ArrayList<>(Arrays.asList(line)));
+            } else if (AmadeusUtils.stringIsNotEmpty(line)) {
+                if (!line.startsWith("-- ")) {
+                    key = line.trim();
+                } else if (key != null) {
+                    if (line.length() > 3) {
+                        if (!result.containsKey(key))
+                            result.put(key, new ArrayList<>());
+                        result.get(key).add(line.substring(3));
+                    } else
+                        throw new IllegalArgumentException(
+                                String.format(fromName + ": error on line %s. Line can not be null", linePos, line));
+                } else
+                    throw new IllegalArgumentException(
+                            String.format(fromName + ": error on line %s. Key can not be null", linePos, line));
+            }
+            line = reader.readLine();
+        }
+        reader.close();
+        return result;
+    }
+
+    public static Map<String, String> parseHashMapStringString(BufferedReader reader, String fromName, boolean comments)
+            throws IOException, IllegalArgumentException {
+        HashMap<String, String> result = comments ? new LinkedHashMap<>() : new HashMap<>();
+        String line = reader.readLine();
+        int index = -1;
+        int linePos = 0;
+        while (line != null) {
+            if (line.startsWith("#") || AmadeusUtils.stringIsEmpty(line)) {
+                if (comments)
+                    result.put("#" + linePos, line);
+            } else {
+                index = line.indexOf("=");
+                if (index > 0)
+                    result.put(line.substring(0, index), line.substring(index + 1, line.length()));
+                else
+                    throw new IllegalArgumentException(
+                            String.format(fromName + ": error on line %s:%s", linePos, line));
+            }
+            index = -1;
+            linePos++;
+            line = reader.readLine();
+        }
+        reader.close();
+        return result;
+    }
+
     public static String formatChatLog(AmadeusCore core, MessageReceivedEvent event) {
         String result = core.optionChatLogFormat;
         result = result.replace("{messageId}", String.valueOf(event.getMessageID())).replace("{messageIdLn}",
@@ -38,9 +100,10 @@ public class AmadeusUtils {
         if (!core.isPrivateMessage(event.getMessage())) {
             result = result.replace("{guild}", event.getGuild().getName() + " (" + event.getGuild().getLongID() + ")")
                     .replace("{guildLn}", event.getGuild().getName() + " (" + event.getGuild().getLongID() + ")\n");
-            result = result.replace("{channel}", event.getChannel().getName() + " (" + event.getChannel().getLongID())
+            result = result
+                    .replace("{channel}", event.getChannel().getName() + " (" + event.getChannel().getLongID() + ")")
                     .replace("{channelLn}",
-                            event.getChannel().getName() + " (" + event.getChannel().getLongID() + "\n");
+                            event.getChannel().getName() + " (" + event.getChannel().getLongID() + ")\n");
         } else {
             result = result.replace("{guild}", "").replace("{guildLn}", "");
             result = result.replace("{channel}", "Private message").replace("{channelLn}", "Private message\n");

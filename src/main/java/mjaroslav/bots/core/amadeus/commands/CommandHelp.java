@@ -29,34 +29,34 @@ public class CommandHelp extends BaseCommand {
             EmbedBuilder builder = new EmbedBuilder().withColor(0x00FF00);
             StringBuilder desc = new StringBuilder();
             if (command != null) {
-                builder.withAuthorName(core.langs.translate(source.getGuild(), sender, "help.commandname",
+                builder.withAuthorName(core.langs.translate(source.getGuild(), sender, "help_name",
                         handler.name + " > " + command.name));
                 String argName = "";
                 if (hasArg(source, "arg", argsParsed))
                     argName = argValue(source, "arg", argsParsed);
                 if (AmadeusUtils.stringIsEmpty(argName)) {
                     desc.append(command.getHelpDesc(source));
-                    desc.append("\n\n" + core.langs.translate(source, "help.commands.names") + "\n");
+                    desc.append("\n\n" + core.langs.translate(source, "help_synonyms") + "\n");
                     for (String name : core.langs.getNames(source, command))
                         desc.append("\"" + name + "\" ");
                     if (!command.getArgsList().isEmpty())
-                        desc.append("\n\n" + core.langs.translate(source, "help.args") + "\n");
+                        desc.append("\n\n" + core.langs.translate(source, "help_args") + "\n");
                     for (String arg : command.getArgsList())
                         desc.append("\"" + arg + "\" ");
                 } else {
                     desc.append(command.getHelpDesc(source, argName));
-                    desc.append("\n\n" + core.langs.translate(source, "help.commands.names") + "\n");
+                    desc.append("\n\n" + core.langs.translate(source, "help_synonyms") + "\n");
                     for (String name : core.langs.getNamesArg(source, command, argName))
                         desc.append("\"" + name + "\" ");
-                    builder.withAuthorName(core.langs.translate(source, "help.commandname",
+                    builder.withAuthorName(core.langs.translate(source, "help_name",
                             handler.name + " > " + command.name + " > " + argName));
                 }
 
                 builder.withDesc(desc.toString().trim());
                 core.answerMessage(source, builder.build());
             } else {
-                builder.withAuthorName(core.langs.translate(source, "help.handlername", handler.name));
-                desc.append(core.langs.translate(source, "help.commands") + "\n");
+                builder.withAuthorName(core.langs.translate(source, "help_name", handler.name));
+                desc.append(core.langs.translate(source, "help_commands") + "\n");
                 for (BaseCommand com : handler.getCommandList())
                     desc.append("\"" + com.name + "\" ");
                 builder.withDesc(desc.toString().trim());
@@ -64,20 +64,6 @@ public class CommandHelp extends BaseCommand {
             }
         } else
             execute(sender, source, "command=" + name + " handler=" + handler.name);
-    }
-
-    @Override
-    public String getHelpDesc(IMessage message, String args) {
-        String result = super.getHelpDesc(message, args);
-        switch (args) {
-            case "command":
-                result = core.langs.translate(message, "help." + name + ".command");
-                break;
-            case "handler":
-                result = core.langs.translate(message, "help." + name + ".handler");
-                break;
-        }
-        return result;
     }
 
     @Override

@@ -1,14 +1,13 @@
 package mjaroslav.bots.core.amadeus.config;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import mjaroslav.bots.core.amadeus.AmadeusCore;
+import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 
 public abstract class PropertiesConfigurationHandler extends ConfigurationHandler {
     private boolean clearOnRead = false;
@@ -18,40 +17,18 @@ public abstract class PropertiesConfigurationHandler extends ConfigurationHandle
     public PropertiesConfigurationHandler(AmadeusCore core, String name, boolean clearOnRead) {
         super(core, name);
         this.clearOnRead = clearOnRead;
-        File file = getFolder();
-        if ((file.exists() && file.isDirectory()) || file.mkdirs()) {
-            file = getFile();
-            if (!(file.exists() && file.isFile()))
-                try {
-                    file.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-        }
+        AmadeusUtils.existsOrCreateFile(getFile());
     }
 
     @Override
     public void readConfig() throws Exception {
         if (clearOnRead)
             map.clear();
-        BufferedReader reader = Files.newBufferedReader(getFile().toPath(), StandardCharsets.UTF_8);
-        String line = reader.readLine();
-        int index = -1;
-        int linePos = 0;
-        while (line != null) {
-            if (!line.startsWith("#")) {
-                index = line.indexOf("=");
-                if (index > 0)
-                    map.put(line.substring(0, index), new ConfigProperty(line.substring(index + 1, line.length())));
-                else
-                    throw new IllegalArgumentException(String.format("Error on line %s: %s", linePos, line));
-            } else
-                map.put("#" + linePos, new ConfigProperty(line));
-            index = -1;
-            linePos++;
-            line = reader.readLine();
-        }
-        reader.close();
+        for (Entry<String, String> entry : AmadeusUtils
+                .parseHashMapStringString(Files.newBufferedReader(getFile().toPath(), StandardCharsets.UTF_8),
+                        getFile().getAbsolutePath(), true)
+                .entrySet())
+            map.put(entry.getKey(), new ConfigProperty(entry.getValue()));
     }
 
     @Override

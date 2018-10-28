@@ -1,0 +1,34 @@
+{
+  "roles": {
+    "default": {
+      "is_default": true,
+      "permissions": [
+        "default.permissions",
+        "default.status",
+        "default.help",
+        "default.info.discord",
+        "default.info.discord.emoji",
+        "default.info.discord.perms",
+        "default.langs",
+        "default.langs.set",
+        "default.langs.list"
+      ]
+    },
+    "moder": {
+      "is_default": false,
+      "parent": "default",
+      "permissions": [
+        "default.info.*",
+        "default.permissions.*",
+        "default.status.*"
+      ]
+    },
+    "admin": {
+      "is_default": false,
+      "parent": "moder",
+      "permissions": [
+        "default.langs.set.guild"
+      ]
+    }
+  }
+}

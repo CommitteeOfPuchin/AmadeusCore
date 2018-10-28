@@ -35,7 +35,10 @@ import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IRole;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.AttachmentPartEntry;
 import sx.blah.discord.util.EmbedBuilder;
 
@@ -55,7 +58,7 @@ public abstract class AmadeusCore {
 
     public boolean optionDevMode = false;
     public boolean optionHideInvite = true;
-    public boolean optionLogChat = true;
+    public boolean optionLogChat = false;
     public String optionChatLogFormat = "{guildLn}{channelLn}{userLn}{text}";
     public String optionMainPrefix = "execute";
 
@@ -111,7 +114,7 @@ public abstract class AmadeusCore {
             registerCommandHandlers();
             registerCommands();
             loadAll();
-            log.info(i18n.translate("bot.ready"));
+            log.info(i18n.translate("bot_ready"));
         }
         return ready;
     }
@@ -185,6 +188,38 @@ public abstract class AmadeusCore {
         for (CommandHandler handler : listOfCommandHandlers())
             result += handler.getCommandList().size();
         return result;
+    }
+
+    public IUser argUser(String arg) {
+        try {
+            return client.getUserByID(Long.parseLong(arg.replaceAll("\\D", "")));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public IRole argRole(String arg) {
+        try {
+            return client.getRoleByID(Long.parseLong(arg.replaceAll("\\D", "")));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public IChannel argChannel(String arg) {
+        try {
+            return client.getChannelByID(Long.parseLong(arg.replaceAll("\\D", "")));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public IGuild argGuild(String arg) {
+        try {
+            return client.getGuildByID(Long.parseLong(arg.replaceAll("\\D", "(1)")));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public boolean isPrivateMessage(IMessage message) {
@@ -308,20 +343,24 @@ public abstract class AmadeusCore {
     public void sendError(IMessage source, String text) {
         answerMessage(source,
                 new EmbedBuilder()
-                        .withTitle(String.format(":no_entry_sign: %s", langs.translate(source, "answer.error")))
+                        .withTitle(String.format(":no_entry_sign: %s", langs.translate(source, "answer_error")))
                         .withDesc(text).withColor(0xFF0000).build());
     }
 
+    public void sendCanceled(IMessage source) {
+           sendWarn(source, langs.translate(source, "answer_canceled"));
+    }
+    
     public void sendDone(IMessage source, String text) {
         answerMessage(source,
                 new EmbedBuilder()
-                        .withTitle(String.format(":white_check_mark: %s", langs.translate(source, "answer.done")))
+                        .withTitle(String.format(":white_check_mark: %s", langs.translate(source, "answer_done")))
                         .withDesc(text).withColor(0x00FF00).build());
     }
 
     public void sendWarn(IMessage source, String text) {
         answerMessage(source,
-                new EmbedBuilder().withTitle(String.format(":warning: %s", langs.translate(source, "answer.warn")))
+                new EmbedBuilder().withTitle(String.format(":warning: %s", langs.translate(source, "answer_warn")))
                         .withDesc(text).withColor(0xFFFF00).build());
     }
 
@@ -333,24 +372,17 @@ public abstract class AmadeusCore {
                 .withDesc(stackTrace).withColor(0xFF0000).build());
     }
 
-    public void disableBot() {
+    public void stopBot() {
         ready = false;
         if (client != null)
             client.logout();
-    }
-
-    public static final List<String> DEFAULT_PERMISSIONS = Arrays.asList("default.help", "default.status", "default.permsinfo");
-    
-    public List<String> getDefaultPermissions() {
-        return DEFAULT_PERMISSIONS;
-    }
-    
-    public List<String> getDefaultPermissionsPrivate() {
-        return DEFAULT_PERMISSIONS;
+        afterStop();
     }
 
     public void onReady() {}
 
+    public void afterStop() {}
+    
     public static class EventHandler {
         private final AmadeusCore core;
 
@@ -366,7 +398,7 @@ public abstract class AmadeusCore {
 
         @EventSubscriber
         public void onMessage(MessageReceivedEvent event) {
-            if(core.optionLogChat)
+            if (core.optionLogChat)
                 core.log.info(AmadeusUtils.formatChatLog(core, event));
             for (CommandHandler commandHandler : core.listOfCommandHandlers())
                 if (commandHandler.executeCommand(event))
