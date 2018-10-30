@@ -18,33 +18,27 @@ eclipse {
 	}
 }
 
-task generateResources(dependsOn: processResources) {
-	def list = []
-	def buildDirPath = sourceSets.main.output.resourcesDir.absolutePath
-	def out = new File(buildDirPath + '/amadeus/languages/langlist.txt')
-	File folder = new File(buildDirPath + '/amadeus/languages')
-	folder.eachFileRecurse FileType.FILES,  { file ->
-		if (file.name.endsWith(".lang") || file.name.endsWith(".cmds"))
-			list << file.name
-	}
-	if(!out.exists())
-		out.createNewFile()
-	out.text = list.join("\n")
+def generatedResources = "$buildDir/generated-resources/main"
+
+sourceSets {
+    main {
+        output.dir(generatedResources, builtBy: "generateResources")
+    }
 }
 
-task generateLangList() {
-	def list = []
-	def out = new File('bin/amadeus/languages')
-	out.mkdirs();
-	out = new File('bin/amadeus/languages/langlist.txt');
-	File folder = new File(sourceSets.main.output.resourcesDir.absolutePath + '/amadeus/languages')
-	folder.eachFileRecurse FileType.FILES,  { file ->
-		if (file.name.endsWith(".lang") || file.name.endsWith(".cmds"))
-			list << file.name
+task generateResources(dependsOn: processResources) {
+	doLast {
+		def list = []
+		def out = new File(generatedResources, 'amadeus/languages')
+		out.mkdirs()
+		out = new File(generatedResources, 'amadeus/languages/langlist.txt')
+		def folder = new File(sourceSets.main.output.resourcesDir, '/amadeus/languages')
+		folder.eachFileRecurse FileType.FILES,  { file ->
+			if (file.name.endsWith(".lang") || file.name.endsWith(".cmds"))
+				list << file.name
+		}
+		out.text = list.join("\n")
 	}
-	if(!out.exists())
-		out.createNewFile()
-	out.text = list.join("\n")
 }
 
 task fatJar(type: Jar) {

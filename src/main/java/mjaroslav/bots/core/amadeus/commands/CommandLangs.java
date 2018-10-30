@@ -82,7 +82,7 @@ public class CommandLangs extends BaseCommand {
                     } else
                         core.sendError(source, core.langs.translate(source, "answer_no_pm"));
                 } else {
-                    if (!canUseArg(source, "set"))
+                    if (!canUseArg(source, "reset"))
                         return;
                     core.langs.resetLangFromUser(sender);
                     core.sendDone(source, core.langs.translate(source, "langs_set",
@@ -97,7 +97,7 @@ public class CommandLangs extends BaseCommand {
             else {
                 core.sendDone(source, core.langs.translate(source, "langs_current_guild",
                         core.i18n.getLangNameTranslated(core.langs.getLang(source)), source.getChannel().mention(),
-                        core.i18n.getLangNameTranslated(core.langs.getLang(null, source.getChannel(), null)),
+                        core.i18n.getLangNameTranslated(core.langs.getLang(source.getGuild(), source.getChannel(), null)),
                         source.getGuild().getName(),
                         core.i18n.getLangNameTranslated(core.langs.getLang(source.getGuild(), null, null))));
             }

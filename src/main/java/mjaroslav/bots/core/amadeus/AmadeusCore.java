@@ -216,7 +216,7 @@ public abstract class AmadeusCore {
 
     public IGuild argGuild(String arg) {
         try {
-            return client.getGuildByID(Long.parseLong(arg.replaceAll("\\D", "(1)")));
+            return client.getGuildByID(Long.parseLong(arg.replaceAll("\\D", "")));
         } catch (Exception e) {
             return null;
         }

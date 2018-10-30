@@ -173,6 +173,7 @@ public class LangHandler {
     }
 
     public void resetLangFromGuild(long guildId) {
+        GUILDS.remove(guildId);
         database.executeUpdate("DELETE FROM guilds WHERE guildId = " + guildId);
     }
 
@@ -183,7 +184,6 @@ public class LangHandler {
 
     public void setLangToGuild(long guildId, String key) {
         resetLangFromGuild(guildId);
-        GUILDS.remove(guildId);
         database.executeUpdate(String.format("INSERT INTO guilds(guildId, lang) VALUES(%s, '%s')", guildId, key));
         GUILDS.put(guildId, key);
     }
@@ -194,16 +194,16 @@ public class LangHandler {
     }
 
     public void resetLangFromChannel(long channelId) {
+        CHANNELS.remove(channelId);
         database.executeUpdate("DELETE FROM channels WHERE channelId = " + channelId);
     }
 
     public void resetLangFromChannel(IChannel channel) {
         if (channel != null)
-            resetLangFromGuild(channel.getLongID());
+            resetLangFromChannel(channel.getLongID());
     }
 
     public void setLangToChannel(long channelId, String key) {
-        CHANNELS.remove(channelId);
         database.executeUpdate(String.format("INSERT INTO channels(channelId, lang) VALUES(%s, '%s')", channelId, key));
         CHANNELS.put(channelId, key);
     }
@@ -214,17 +214,17 @@ public class LangHandler {
     }
 
     public void resetLangFromUser(long userId) {
+        USERS.remove(userId);
         database.executeUpdate("DELETE FROM users WHERE userId = " + userId);
     }
 
     public void resetLangFromUser(IUser user) {
         if (user != null)
-            resetLangFromGuild(user.getLongID());
+            resetLangFromUser(user.getLongID());
     }
 
     public void setLangToUser(long userId, String key) {
         resetLangFromUser(userId);
-        USERS.remove(userId);
         USERS.put(userId, key);
         database.executeUpdate(String.format("INSERT INTO users(userId, lang) VALUES(%s, '%s')", userId, key));
     }
