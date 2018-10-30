@@ -38,10 +38,9 @@ public class CommandHelp extends BaseCommand {
                 handler = this.handler;
             BaseCommand command = null;
             if (hasArg(source, "command", argsParsed))
-                command = handler.getCommand(source.getGuild(), sender, argValue(source, "command", argsParsed));
+                command = handler.getCommand(source.getGuild(), source.getChannel(), sender, argValue(source, "command", argsParsed));
             if (command != null) {
-                builder.withAuthorName(core.langs.translate(source.getGuild(), sender, "help_name",
-                        handler.name + " > " + command.name));
+                builder.withAuthorName(core.langs.translate(source, "help_name", handler.name + " > " + command.name));
                 String argName = "";
                 if (hasArg(source, "arg", argsParsed))
                     argName = argValue(source, "arg", argsParsed);

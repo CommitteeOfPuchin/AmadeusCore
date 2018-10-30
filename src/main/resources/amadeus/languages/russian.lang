@@ -1,5 +1,6 @@
 translated_name=Русский
 flag_emoji=:flag_ru:
+translator=MJaroslav
 
 list_empty=Список пуст!
 
@@ -21,10 +22,13 @@ answer_reloaded_perms=Права перезагружены.
 answer_reloaded_langs=Языки перезагружены.
 
 langs_current=**Текущий язык:** %s
+# ЯЗЫКПОЛЬЗОВАТЕЛЯ | УПОМИНАНИЕКАНАЛА | ЯЗЫККАНАЛА | ИМЯСЕРВЕРА | ЯЗЫКСЕРВЕРА
+langs_current_guild=**Текущий язык:**\n\nВы:\n%s\n\n%s:\n%s\n\n%s:\n%s
 langs_list=**Доступные языки:**
 langs_not_found=Язык (%s) не найден!
 langs_set=Язык (%s) установлен!
 langs_set_guild=Язык (%s) установлен для %s!
+langs_set_channel=Язык (%s) установлен для %s!
 
 bot_ready=Бот готов
 bot_reloaded=Бот перезагружен
@@ -72,3 +76,7 @@ help_command_default_langs=Работа с локализацией бота. В
 help_command_default_langs_list=Вывести список языков.
 help_command_default_langs_set=Установить себе выбранный язык.
 help_command_default_langs_set_guild=Установить выбранный язык на весь сервер.
+help_command_default_langs_set_channel=Установить выбранный язык на весь канал.
+help_command_default_langs_reset=Сбросить себе язык.
+help_command_default_langs_reset_guild=Сбросить язык серверу.
+help_command_default_langs_reset_channel=Сбросить язык каналу.

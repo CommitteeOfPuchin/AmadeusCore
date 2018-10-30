@@ -57,6 +57,18 @@ default.langs.set
 default.langs.set.guild
 -- сервер
 -- с
+default.langs.set.channel
+-- канал
+-- к
+default.langs.reset
+-- ресет
+-- сброс
+default.langs.reset.guild
+-- сервер
+-- с
+default.langs.reset.channel
+-- канал
+-- к
 default.langs.list
 -- список
 -- все

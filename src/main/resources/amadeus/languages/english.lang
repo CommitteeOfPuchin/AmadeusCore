@@ -1,5 +1,6 @@
 translated_name=English
 flag_emoji=:flag_gb:/:flag_us:
+translator=MJaroslav/GT
 
 list_empty=The list is empty!
 
@@ -20,11 +21,14 @@ answer_reloaded_configs=Configurations are reloaded.
 answer_reloaded_perms=Permissions are reloaded.
 answer_reloaded_langs=Languages are reloaded.
 
-langs_current=**Current lang:** %s
+langs_current=**Current language:**\n%s
+# USERLANG | CHANNELMENTION | CHANNELLANG | GUILDLNAME | GUILDLANG
+langs_current_guild=**Current language:**\n\nYou:\n%s\n\n%s:\n%s\n\n%s:\n%s
 langs_list=**Available languages:**
 langs_not_found=Lang (%s) not found!
 langs_set=Language (%s) is set!
 langs_set_guild=Language (%s) is set for %s!
+langs_set_channel=Language (%s) is set for %s!
 
 bot_ready=Bot ready
 bot_reloaded=Bot reloaded
@@ -72,3 +76,7 @@ help_command_default_langs=Setting the localication of the bot. No arguments dis
 help_command_default_langs_list=List languages.
 help_command_default_langs_set=Set selected language to yourself.
 help_command_default_langs_set_guild=Set selected language to guild.
+help_command_default_langs_set_channel=Set selected language to channel.
+help_command_default_langs_reset=Reset language from yourself.
+help_command_default_langs_reset_guild=Reset language from guild.
+help_command_default_langs_reset_channel=Reset language from channel.

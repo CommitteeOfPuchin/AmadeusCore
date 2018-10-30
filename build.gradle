@@ -32,6 +32,21 @@ task generateResources(dependsOn: processResources) {
 	out.text = list.join("\n")
 }
 
+task generateLangList() {
+	def list = []
+	def out = new File('bin/amadeus/languages')
+	out.mkdirs();
+	out = new File('bin/amadeus/languages/langlist.txt');
+	File folder = new File(sourceSets.main.output.resourcesDir.absolutePath + '/amadeus/languages')
+	folder.eachFileRecurse FileType.FILES,  { file ->
+		if (file.name.endsWith(".lang") || file.name.endsWith(".cmds"))
+			list << file.name
+	}
+	if(!out.exists())
+		out.createNewFile()
+	out.text = list.join("\n")
+}
+
 task fatJar(type: Jar) {
     baseName = project.name + "-all"
     from {

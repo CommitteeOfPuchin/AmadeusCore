@@ -12,7 +12,7 @@ public class CommandStatus extends BaseCommand {
 
     @Override
     public void execute(IUser sender, IMessage source, String args) throws Exception {
-        EmbedBuilder builder = core.info.toEmbedBuilder(source.getGuild(), sender);
+        EmbedBuilder builder = core.info.toEmbedBuilder(source.getGuild(), source.getChannel(), sender);
         StringBuilder answer = new StringBuilder();
         answer.append(core.langs.translate(source, "status_guilds", core.client.getGuilds().size()) + "\n");
         answer.append(core.langs.translate(source, "status_users", core.client.getUsers().size()) + "\n");

@@ -6,6 +6,7 @@ import java.util.List;
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 
@@ -38,7 +39,7 @@ public class DefaultCommandHandler extends CommandHandler {
         String text = event.getMessage().getContent();
         String commandString = AmadeusUtils.removePreifx(text, core, core.langs.getPreifxes(event.getMessage()), false);
         if (text.length() > commandString.length()) {
-            BaseCommand command = getCommand(event.getGuild(), event.getAuthor(), commandString);
+            BaseCommand command = getCommand(event.getGuild(), event.getChannel(), event.getAuthor(), commandString);
             if (command != null) {
                 String args = AmadeusUtils.removePreifx(commandString, core,
                         core.langs.getNames(event.getMessage(), command), false);
@@ -60,9 +61,9 @@ public class DefaultCommandHandler extends CommandHandler {
     }
 
     @Override
-    public BaseCommand getCommand(IGuild guild, IUser user, String text) {
+    public BaseCommand getCommand(IGuild guild, IChannel channel, IUser user, String text) {
         for (BaseCommand command : getCommandList())
-            for (String name : core.langs.getNames(guild, user, command))
+            for (String name : core.langs.getNames(guild, channel, user, command))
                 if (text.toLowerCase().startsWith(name) && (text.toLowerCase().replaceFirst(name, "").startsWith(" ")
                         || text.toLowerCase().replaceFirst(name, "").equals("")))
                     return command;

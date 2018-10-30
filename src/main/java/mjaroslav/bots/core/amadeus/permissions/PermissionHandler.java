@@ -167,10 +167,13 @@ public class PermissionHandler {
     public HashSet<String> getPermissions(IGuild guild, IUser user) {
         HashSet<String> result = new HashSet<>();
         result.addAll(getPermissionsFromPermissionRole(guild, getPermissionRoleFromUser(guild, user)));
-        for (IRole role : user.getRolesForGuild(guild))
-            result.addAll(getPermissionsFromPermissionRole(guild, getPermissionRoleFromRole(role)));
-        for (Permissions permission : user.getPermissionsForGuild(guild))
-            result.addAll(getPermissionsFromPermissionRole(guild, getPermissionRoleFromPermission(guild, permission)));
+        if (guild != null && user != null)
+            for (IRole role : user.getRolesForGuild(guild))
+                result.addAll(getPermissionsFromPermissionRole(guild, getPermissionRoleFromRole(role)));
+        if (user != null && guild != null)
+            for (Permissions permission : user.getPermissionsForGuild(guild))
+                result.addAll(
+                        getPermissionsFromPermissionRole(guild, getPermissionRoleFromPermission(guild, permission)));
         return result;
     }
 

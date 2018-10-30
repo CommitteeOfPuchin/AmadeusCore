@@ -48,6 +48,19 @@ default.langs.set.guild
 -- server
 -- -g
 -- g
+default.langs.set.channel
+-- c
+-- -c
+default.langs.reset
+-- -r
+-- r
+default.langs.reset.guild
+-- server
+-- -g
+-- g
+default.langs.reset.channel
+-- c
+-- -c
 default.langs.list
 -- -l
 -- l

@@ -19,6 +19,7 @@ public class I18n {
 
     public static final String KEY_TRANSLATED_NAME = "translated_name";
     public static final String KEY_FLAG_EMOJI = "flag_emoji";
+    public static final String KEY_TRANSLATOR = "translator";
 
     public final AmadeusCore core;
     public final File FOLDER;
@@ -158,11 +159,13 @@ public class I18n {
     public String getLangNameTranslated(String lang) {
         if (!STORAGE_LANGS.containsKey(lang))
             return lang;
-
         return (STORAGE_LANGS.get(lang).getOrDefault(KEY_FLAG_EMOJI, "").isEmpty() ? ""
-                : STORAGE_LANGS.get(lang).getOrDefault(KEY_FLAG_EMOJI, "") + " ")
-                + (STORAGE_LANGS.get(lang).getOrDefault(KEY_TRANSLATED_NAME, "").isEmpty() ? STORAGE_LANGS.get(lang)
-                        : STORAGE_LANGS.get(lang).getOrDefault(KEY_TRANSLATED_NAME, "") + " [" + lang + "]");
+                : STORAGE_LANGS.get(lang).get(KEY_FLAG_EMOJI) + " ")
+                + (STORAGE_LANGS.get(lang).getOrDefault(KEY_TRANSLATED_NAME, "").isEmpty() ? ""
+                        : STORAGE_LANGS.get(lang).get(KEY_TRANSLATED_NAME) + " ")
+                + (STORAGE_LANGS.get(lang).getOrDefault(KEY_TRANSLATOR, "").isEmpty() ? ""
+                        : "(" + STORAGE_LANGS.get(lang).get(KEY_TRANSLATOR) + ") ")
+                + "[" + lang + "]";
     }
 
     public List<String> getLangNamesTranslated() {

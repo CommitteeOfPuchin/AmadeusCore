@@ -3,6 +3,7 @@ package mjaroslav.bots.core.amadeus.commands;
 import java.util.List;
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 
@@ -19,7 +20,7 @@ public abstract class CommandHandler {
 
     public abstract boolean executeCommand(MessageReceivedEvent event);
 
-    public abstract BaseCommand getCommand(IGuild guild, IUser user, String text);
+    public abstract BaseCommand getCommand(IGuild guild, IChannel channel, IUser user, String text);
 
     public abstract void registerCommand(BaseCommand command);
 

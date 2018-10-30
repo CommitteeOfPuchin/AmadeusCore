@@ -4,6 +4,7 @@ import java.io.File;
 import com.google.gson.annotations.SerializedName;
 import mjaroslav.bots.core.amadeus.AmadeusCore;
 import mjaroslav.bots.core.amadeus.utils.AmadeusUtils;
+import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
@@ -99,27 +100,28 @@ public class BotInfo {
         return AmadeusUtils.stringIsNotEmpty(version);
     }
 
-    public EmbedBuilder toEmbedBuilder(IGuild guild, IUser user) {
+    public EmbedBuilder toEmbedBuilder(IGuild guild, IChannel channel, IUser user) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.withAuthorName(References.LIB_NAME + " > " + getName());
-        builder.appendField(core.langs.translate(guild, user, "bot_amadeus_version"), References.LIB_VERSION, true);
+        builder.appendField(core.langs.translate(guild, channel, user, "bot_amadeus_version"), References.LIB_VERSION,
+                true);
         if (hasVersion())
-            builder.appendField(core.langs.translate(guild, user, "bot_version"), getVersion(), true);
+            builder.appendField(core.langs.translate(guild, channel, user, "bot_version"), getVersion(), true);
         if (hasDescription())
-            builder.appendField(core.langs.translate(guild, user, "bot_description"), getDescription(), true);
+            builder.appendField(core.langs.translate(guild, channel, user, "bot_description"), getDescription(), true);
         if (hasCredits())
-            builder.appendField(core.langs.translate(guild, user, "bot_credits"), getCredits(), true);
+            builder.appendField(core.langs.translate(guild, channel, user, "bot_credits"), getCredits(), true);
         if (hasSourceUrl())
-            builder.appendField(core.langs.translate(guild, user, "bot_source"), getSourceUrl(), true);
+            builder.appendField(core.langs.translate(guild, channel, user, "bot_source"), getSourceUrl(), true);
         if (hasBotSite())
-            builder.appendField(core.langs.translate(guild, user, "bot_site"), getBotSite(), true);
+            builder.appendField(core.langs.translate(guild, channel, user, "bot_site"), getBotSite(), true);
         StringBuilder sbuilder = new StringBuilder();
         for (long id : devIds) {
             IUser u = core.client.getUserByID(id);
             if (u != null)
                 sbuilder.append(u.mention(true) + " ");
         }
-        builder.appendField(core.langs.translate(guild, user, "bot_devs"), sbuilder.toString().trim(), false);
+        builder.appendField(core.langs.translate(guild, channel, user, "bot_devs"), sbuilder.toString().trim(), false);
         return builder;
     }
 

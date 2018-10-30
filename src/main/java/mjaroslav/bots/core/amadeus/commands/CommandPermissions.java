@@ -24,17 +24,6 @@ public class CommandPermissions extends BaseCommand {
             answer.append(core.langs.translate(source, "permissions_my") + "\n");
             for (String perm : core.permissions.getPermissions(source.getGuild(), sender))
                 answer.append("`" + perm + "` ");
-        } else if (hasArg(source, "user", argsParsed)) {
-            if (!canUseArg(source, "user"))
-                return;
-            IUser user = core.argUser(argValue(source, "user", argsParsed));
-            if (user == null) {
-                core.sendError(source, core.langs.translate(source, "answer_bag_user"));
-                return;
-            }
-            answer.append(core.langs.translate(source, "permissions_user", user.mention(true)) + "\n");
-            for (String perm : core.permissions.getPermissions(source.getGuild(), user))
-                answer.append("`" + perm + "` ");
         } else if (hasArg(source, "discord", argsParsed)) {
             if (!canUseArg(source, "discord"))
                 return;
@@ -49,9 +38,9 @@ public class CommandPermissions extends BaseCommand {
                 }
                 EnumSet<Permissions> permissions = user.getPermissionsForGuild(source.getChannel().getGuild());
                 if (flag)
-                    answer.append(core.langs.translate(source, "permissions_my", user.mention(true)));
+                    answer.append(core.langs.translate(source, "permissions_my"));
                 else
-                    answer.append(core.langs.translate(source, "permissions_user"));
+                    answer.append(core.langs.translate(source, "permissions_user", user.mention(true)));
                 EmbedBuilder builder = new EmbedBuilder().withDesc(answer.toString())
                         .withTitle(String.format(":white_check_mark: %s", core.langs.translate(source, "answer_done")))
                         .withColor(0x00FF00);
@@ -76,6 +65,17 @@ public class CommandPermissions extends BaseCommand {
                 core.sendError(source, core.langs.translate(source, "answer_no_pm"));
                 return;
             }
+        } else if (hasArg(source, "user", argsParsed)) {
+            if (!canUseArg(source, "user"))
+                return;
+            IUser user = core.argUser(argValue(source, "user", argsParsed));
+            if (user == null) {
+                core.sendError(source, core.langs.translate(source, "answer_bag_user"));
+                return;
+            }
+            answer.append(core.langs.translate(source, "permissions_user", user.mention(true)) + "\n");
+            for (String perm : core.permissions.getPermissions(source.getGuild(), user))
+                answer.append("`" + perm + "` ");
         }
         core.sendDone(source, answer.toString());
     }
