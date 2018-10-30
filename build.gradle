@@ -1,8 +1,9 @@
-apply plugin: 'java'
+import groovy.io.FileType
 
-apply plugin: "application"
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
 archivesBaseName = "AmadeusCore"
-mainClassName = "mjaroslav.bots.core.amadeus.AmadeusCore"
 version = "2.0.0.0-alpha"
 
 compileJava.options.encoding = 'UTF-8'
@@ -11,11 +12,28 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+eclipse {
+	project {
+		name = 'AmadeusCore'
+	}
+}
+
+task generateResources(dependsOn: processResources) {
+	def list = []
+	def buildDirPath = sourceSets.main.output.resourcesDir.absolutePath
+	def out = new File(buildDirPath + '/amadeus/languages/langlist.txt')
+	File folder = new File(buildDirPath + '/amadeus/languages')
+	folder.eachFileRecurse FileType.FILES,  { file ->
+		if (file.name.endsWith(".lang") || file.name.endsWith(".cmds"))
+			list << file.name
+	}
+	if(!out.exists())
+		out.createNewFile()
+	out.text = list.join("\n")
+}
+
 task fatJar(type: Jar) {
     baseName = project.name + "-all"
-	manifest {
-    	attributes "Main-Class": "mjaroslav.bots.test.BotTest"
-  	}
     from {
     	configurations.compile.collect {
     		it.isDirectory() ? it : zipTree(it)
@@ -23,14 +41,6 @@ task fatJar(type: Jar) {
     }
     with jar
 }
-
-
-jar {
-	manifest {
-    	attributes "Main-Class": "mjaroslav.bots.test.BotTest"
-  	}	
-}
-
 
 repositories {
     jcenter()

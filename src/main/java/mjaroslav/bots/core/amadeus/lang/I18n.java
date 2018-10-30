@@ -1,11 +1,7 @@
 package mjaroslav.bots.core.amadeus.lang;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,34 +31,30 @@ public class I18n {
     }
 
     public void loadDefaultLangs() {
-        String[] langs = new String[] {};
-        try {
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(FileHelper.streamDefaultLangList(), StandardCharsets.UTF_8));
-            langs = reader.readLine().split(",");
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        for (String lang : langs) {
-            if (!STORAGE_COMMANDS.containsKey(lang))
-                STORAGE_COMMANDS.put(lang, new HashMap<>());
-            try {
-                STORAGE_COMMANDS.get(lang).putAll(AmadeusUtils.parseHashMapStringStringList(
-                        new BufferedReader(new InputStreamReader(FileHelper.streamLanguageCommands(lang))),
-                        "JAR:" + FileHelper.folderDefaultLanguages() + "/" + lang + "." + FileHelper.EXT_CMDS, false));
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-            if (!STORAGE_LANGS.containsKey(lang))
-                STORAGE_LANGS.put(lang, new HashMap<>());
-            try {
-                STORAGE_LANGS.get(lang).putAll(AmadeusUtils.parseHashMapStringString(
-                        new BufferedReader(
-                                new InputStreamReader(FileHelper.streamLanguage(lang), StandardCharsets.UTF_8)),
-                        "JAR:" + FileHelper.folderDefaultLanguages() + "/" + lang + "." + FileHelper.EXT_LANG, false));
-            } catch (IllegalArgumentException | IOException e) {
-                e.printStackTrace();
+        for (String fileName : AmadeusUtils.readLines(FileHelper.streamDefaultLangList())) {
+            String lang = FilenameUtils.removeExtension(fileName);
+            if (FilenameUtils.isExtension(fileName, FileHelper.EXT_CMDS)) {
+                if (!STORAGE_COMMANDS.containsKey(lang))
+                    STORAGE_COMMANDS.put(lang, new HashMap<>());
+                try {
+                    STORAGE_COMMANDS.get(lang).putAll(AmadeusUtils.parseMapStringList(
+                            AmadeusUtils.readLines(FileHelper.streamLanguageCommands(lang)),
+                            "JAR:" + FileHelper.folderDefaultLanguages() + "/" + lang + "." + FileHelper.EXT_CMDS,
+                            false));
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            } else if (FilenameUtils.isExtension(fileName, FileHelper.EXT_LANG)) {
+                if (!STORAGE_LANGS.containsKey(lang))
+                    STORAGE_LANGS.put(lang, new HashMap<>());
+                try {
+                    STORAGE_LANGS.get(lang).putAll(AmadeusUtils.parseMapString(
+                            AmadeusUtils.readLines(FileHelper.streamLanguage(lang)),
+                            "JAR:" + FileHelper.folderDefaultLanguages() + "/" + lang + "." + FileHelper.EXT_LANG,
+                            false));
+                } catch (IllegalArgumentException | IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -79,11 +71,10 @@ public class I18n {
                 STORAGE_COMMANDS.put(langName, new HashMap<>());
             try {
                 STORAGE_COMMANDS.get(langName)
-                        .putAll(AmadeusUtils.parseHashMapStringStringList(
-                                Files.newBufferedReader(FileHelper.fileLanguageCommandsCustom(core, langName).toPath()),
+                        .putAll(AmadeusUtils.parseMapStringList(FileHelper.fileLanguageCommandsCustom(core, langName),
                                 FileHelper.fileLanguageCommandsCustom(core, langName).getAbsolutePath(), false));
-            } catch (IOException e1) {
-                e1.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         for (File file : FOLDER.listFiles(FileHelper.LANG_EXT_FILTER)) {
@@ -91,10 +82,9 @@ public class I18n {
             if (!STORAGE_LANGS.containsKey(langName))
                 STORAGE_LANGS.put(langName, new HashMap<>());
             try {
-                STORAGE_LANGS.get(langName).putAll(AmadeusUtils.parseHashMapStringString(
-                        new BufferedReader(
-                                new InputStreamReader(FileHelper.streamLanguage(langName), StandardCharsets.UTF_8)),
-                        FileHelper.fileLanguageCustom(core, langName).getAbsolutePath(), false));
+                STORAGE_LANGS.get(langName)
+                        .putAll(AmadeusUtils.parseMapString(FileHelper.fileLanguageCustom(core, langName),
+                                FileHelper.fileLanguageCustom(core, langName).getAbsolutePath(), false));
             } catch (IllegalArgumentException | IOException e) {
                 e.printStackTrace();
             }

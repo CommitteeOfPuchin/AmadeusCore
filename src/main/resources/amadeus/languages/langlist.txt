@@ -1,1 +1,4 @@
-english,russian
+english.cmds
+english.lang
+russian.cmds
+russian.lang

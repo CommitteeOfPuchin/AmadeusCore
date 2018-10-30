@@ -24,9 +24,7 @@ public abstract class PropertiesConfigurationHandler extends ConfigurationHandle
     public void readConfig() throws Exception {
         if (clearOnRead)
             map.clear();
-        for (Entry<String, String> entry : AmadeusUtils
-                .parseHashMapStringString(Files.newBufferedReader(getFile().toPath(), StandardCharsets.UTF_8),
-                        getFile().getAbsolutePath(), true)
+        for (Entry<String, String> entry : AmadeusUtils.parseMapString(getFile(), getFile().getAbsolutePath(), true)
                 .entrySet())
             map.put(entry.getKey(), new ConfigProperty(entry.getValue()));
     }

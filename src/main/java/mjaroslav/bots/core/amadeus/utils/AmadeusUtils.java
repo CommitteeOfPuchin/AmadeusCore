@@ -4,6 +4,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -36,13 +41,27 @@ public class AmadeusUtils {
         return null;
     }
 
-    public static Map<String, List<String>> parseHashMapStringStringList(BufferedReader reader, String fromName,
-            boolean comments) throws IOException, IllegalArgumentException {
+    public static Map<String, List<String>> parseMapStringList(Path path, String fromName, boolean comments)
+            throws IOException, IllegalArgumentException {
+        try {
+            return parseMapStringList(Files.readAllLines(path), fromName, comments);
+        } catch (IllegalArgumentException | IOException e) {
+            e.printStackTrace();
+        }
+        return new HashMap<>();
+    }
+
+    public static Map<String, List<String>> parseMapStringList(File file, String fromName, boolean comments)
+            throws IOException, IllegalArgumentException {
+        return parseMapStringList(file.toPath(), fromName, comments);
+    }
+
+    public static Map<String, List<String>> parseMapStringList(List<String> lines, String fromName, boolean comments)
+            throws IOException, IllegalArgumentException {
         HashMap<String, List<String>> result = comments ? new LinkedHashMap<>() : new HashMap<>();
-        String line = reader.readLine();
         int linePos = 0;
         String key = null;
-        while (line != null) {
+        for (String line : lines)
             if (line.startsWith("#") || AmadeusUtils.stringIsEmpty(line)) {
                 if (comments)
                     result.put("#" + linePos, new ArrayList<>(Arrays.asList(line)));
@@ -61,19 +80,42 @@ public class AmadeusUtils {
                     throw new IllegalArgumentException(
                             String.format(fromName + ": error on line %s. Key can not be null", linePos, line));
             }
-            line = reader.readLine();
-        }
-        reader.close();
         return result;
     }
 
-    public static Map<String, String> parseHashMapStringString(BufferedReader reader, String fromName, boolean comments)
+    public static List<String> readLines(InputStream stream) {
+        ArrayList<String> result = new ArrayList<>();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+        reader.lines().forEach(e -> {
+            result.add(e);
+        });
+        try {
+            reader.close();
+        } catch (IOException e1) {}
+        return result;
+    }
+
+    public static Map<String, String> parseMapString(Path path, String fromName, boolean comments)
+            throws IOException, IllegalArgumentException {
+        try {
+            return parseMapString(Files.readAllLines(path), fromName, comments);
+        } catch (IllegalArgumentException | IOException e) {
+            e.printStackTrace();
+        }
+        return new HashMap<>();
+    }
+
+    public static Map<String, String> parseMapString(File file, String fromName, boolean comments)
+            throws IOException, IllegalArgumentException {
+        return parseMapString(file.toPath(), fromName, comments);
+    }
+
+    public static Map<String, String> parseMapString(List<String> lines, String fromName, boolean comments)
             throws IOException, IllegalArgumentException {
         HashMap<String, String> result = comments ? new LinkedHashMap<>() : new HashMap<>();
-        String line = reader.readLine();
         int index = -1;
         int linePos = 0;
-        while (line != null) {
+        for (String line : lines) {
             if (line.startsWith("#") || AmadeusUtils.stringIsEmpty(line)) {
                 if (comments)
                     result.put("#" + linePos, line);
@@ -87,9 +129,7 @@ public class AmadeusUtils {
             }
             index = -1;
             linePos++;
-            line = reader.readLine();
         }
-        reader.close();
         return result;
     }
 
